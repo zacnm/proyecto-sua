@@ -1,5 +1,7 @@
 package sua.autonomouscar.infrastructure;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -17,6 +19,8 @@ public class Thing implements IThing {
 	protected Dictionary<String, Object> props = null;
 	protected ServiceRegistration<?> s_reg = null;
 	protected List<String> implementedInterfaces = null;
+	protected List<ActionListener> propertyChangeListeners = new ArrayList<ActionListener>();
+	Integer propertyChangeId = 0;
 	
 	public Thing(BundleContext context, String id) {
 		this.context = context;
@@ -47,6 +51,13 @@ public class Thing implements IThing {
 		this.getDeviceProperties().put(propName, value);
 		if ( this.s_reg != null )
 			this.s_reg.setProperties(this.getDeviceProperties());
+			ActionEvent event = new ActionEvent(this, propertyChangeId, propName);
+			
+			for (ActionListener listener : propertyChangeListeners) {
+				listener.actionPerformed(event);
+			}
+			
+			propertyChangeId++;
 		return this;
 	}
 
@@ -63,6 +74,10 @@ public class Thing implements IThing {
 		return this;
 	}
 	
+	public void addPropertyChangeListener(ActionListener listener) {
+		this.propertyChangeListeners.add(listener);
+	}
+	
 	@Override
 	public IThing registerThing() {
 		this.s_reg = this.getBundleContext().registerService(this.implementedInterfaces.toArray(new String[this.implementedInterfaces.size()]), this, this.getDeviceProperties());
@@ -75,7 +90,4 @@ public class Thing implements IThing {
 			this.s_reg.unregister();
 		return this;
 	}
-	
-	
-
 }

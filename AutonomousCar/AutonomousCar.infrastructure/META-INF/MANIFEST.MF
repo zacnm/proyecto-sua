@@ -4,7 +4,9 @@ Bundle-Name: AutonomousCar.infrastructure
 Bundle-SymbolicName: AutonomousCar.infrastructure
 Bundle-Version: 1.0.0
 Bundle-Vendor: JoanFons@SUA
-Import-Package: org.osgi.framework,
+Import-Package: es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.impl,
+ es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.interfaces,
+ org.osgi.framework,
  sua.autonomouscar.devices.interfaces,
  sua.autonomouscar.driving.interfaces,
  sua.autonomouscar.interaction.interfaces,
@@ -16,3 +18,4 @@ Export-Package: sua.autonomouscar.infrastructure,
  sua.autonomouscar.infrastructure.interaction
 Automatic-Module-Name: AutonomousCar.infrastructure
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: es.upv.pros.tatami.adaptation.mapek.lite.redistributable
