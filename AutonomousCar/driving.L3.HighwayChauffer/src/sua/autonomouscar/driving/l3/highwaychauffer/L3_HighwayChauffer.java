@@ -32,6 +32,7 @@ public class L3_HighwayChauffer extends L3_DrivingService implements IL3_Highway
 		this.setReferenceSpeed(DEFAULT_REFERENCE_SPEED);
 		this.setLongitudinalSecurityDistance(DEFAULT_LONGITUDINAL_SECURITY_DISTANCE);
 		this.setLateralSecurityDistance(DEFAULT_LATERAL_SECURITY_DISTANCE);
+		System.out.println("Starting highway chauffer");
 	}
 
 	

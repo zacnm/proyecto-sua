@@ -14,8 +14,9 @@ public class RoadSensor extends Thing implements IRoadSensor {
 	
 	public RoadSensor(BundleContext context, String id) {
 		super(context, id);
+		System.out.println("Start road sensor");
 		this.addImplementedInterface(IRoadSensor.class.getName());
-		this.setRoadType(ERoadType.STD_ROAD);
+		this.setRoadType(ERoadType.HIGHWAY);
 		this.setRoadStatus(ERoadStatus.FLUID);
 	}
 

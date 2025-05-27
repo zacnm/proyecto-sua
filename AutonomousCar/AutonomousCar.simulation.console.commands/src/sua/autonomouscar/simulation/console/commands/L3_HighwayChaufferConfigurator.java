@@ -21,6 +21,7 @@ public class L3_HighwayChaufferConfigurator {
 		
 		IL3_HighwayChauffer theL3HighwayChaufferService = OSGiUtils.getService(context, IL3_HighwayChauffer.class);
 		theL3HighwayChaufferService.setHumanSensors("HumanSensors");
+		System.out.println("Setting L3 road sensor");
 		theL3HighwayChaufferService.setRoadSensor("RoadSensor");
 		theL3HighwayChaufferService.setEngine("Engine");
 		theL3HighwayChaufferService.setSteering("Steering");

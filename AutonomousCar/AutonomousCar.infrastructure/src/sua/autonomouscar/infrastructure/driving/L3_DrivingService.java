@@ -40,6 +40,7 @@ public abstract class L3_DrivingService extends L2_DrivingService implements IL3
 	}
 	
 	protected IRoadSensor getRoadSensor() {
+		System.out.println(String.format("L3 service retrieving road sensor: %s", this.roadSensor));
 		return OSGiUtils.getService(context, IRoadSensor.class, String.format("(%s=%s)", IIdentifiable.ID, this.roadSensor));
 	}
 	

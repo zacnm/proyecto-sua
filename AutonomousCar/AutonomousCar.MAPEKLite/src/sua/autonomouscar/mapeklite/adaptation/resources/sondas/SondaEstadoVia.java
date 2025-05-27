@@ -1,4 +1,4 @@
-package autonomouscar.mapeklite.adaptation.resources.sondas;
+package sua.autonomouscar.mapeklite.adaptation.resources.sondas;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,11 +6,10 @@ import java.awt.event.ActionListener;
 import org.osgi.framework.BundleContext;
 
 import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Probe;
-
+import sua.autonomouscar.devices.interfaces.IRoadSensor;
 import sua.autonomouscar.infrastructure.OSGiUtils;
 import sua.autonomouscar.infrastructure.devices.RoadSensor;
 import sua.autonomouscar.interfaces.ERoadStatus;
-import sua.autonomouscar.devices.interfaces.IRoadSensor;
 
 public class SondaEstadoVia extends Probe implements ActionListener {
 	
@@ -27,8 +26,10 @@ public class SondaEstadoVia extends Probe implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ERoadStatus roadStatus = this.roadSensor.getRoadStatus();
-		this.reportMeasure(roadStatus);
+		if (e.getActionCommand() == RoadSensor.ROAD_STATUS) {
+			ERoadStatus roadStatus = this.roadSensor.getRoadStatus();
+			this.reportMeasure(roadStatus);
+		}
 	}
 		
 }

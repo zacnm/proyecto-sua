@@ -17,7 +17,6 @@ public class DistanceSensor extends Thing implements IDistanceSensor {
 		this.setDistance(DistanceSensor.MAX_DISTANCE);
 	}
 	
-	
 	@Override
 	public int getDistance() {
 		return (int) this.getProperty(DistanceSensor.DISTANCE);

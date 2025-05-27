@@ -13,6 +13,7 @@ public class L0_ManualDriving extends DrivingService implements IL0_ManualDrivin
 		super(context, id);
 		this.addImplementedInterface(IL0_ManualDriving.class.getName());
 		this.addImplementedInterface(ISimulationElement.class.getName());
+		System.out.println("Starting manual driving");
 	}
 
 	@Override

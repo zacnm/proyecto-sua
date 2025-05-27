@@ -237,18 +237,16 @@ public class MyCommandProvider {
 	
 	public void driving(String function) {
 		
+		System.out.println(String.format("Setting driving function: $s", function));
 		if ( function.equalsIgnoreCase("l0") ) {
-			
 			L0_ManualDrivingConfigurator.start(context);
 			return;
 			
 		} else if ( function.equalsIgnoreCase("l1") ) {
-			
 			L1_AssistedDrivingConfigurator.start(context);
 			return;
 
 		} else if ( function.equalsIgnoreCase("l2") ) {
-			
 			if ( Math.random() > 0.5 )
 				L2_AdaptiveCruiseControlConfigurator.start(context);
 			else
@@ -257,13 +255,14 @@ public class MyCommandProvider {
 
 	
 		} else if ( function.equalsIgnoreCase("l3") ) {
-			
 			IRoadSensor roadSensor = OSGiUtils.getService(context, IRoadSensor.class);
 			if (roadSensor == null) {
 				System.out.println("No RoadSensor found! Enabling L2 Autonomous Driving ...");
 				this.driving("l2");
 				return;
 			}
+
+			System.out.println(String.format("Activing L3, road type: %s", roadSensor.getRoadType()));
 			
 			switch (roadSensor.getRoadType()) {
 				case HIGHWAY:

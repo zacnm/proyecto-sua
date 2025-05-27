@@ -1,15 +1,14 @@
-package autonomouscar.mapeklite.adaptation.resources.monitors;
+package sua.autonomouscar.mapeklite.adaptation.resources.monitors;
 
 import org.osgi.framework.BundleContext;
 
-import autonomouscar.mapeklite.adaptation.resources.enums.FuncionConduccion;
-import autonomouscar.mapeklite.adaptation.resources.enums.NivelAutonomia;
 import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Monitor;
 import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
 import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IMonitor;
 import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
-import sua.autonomouscar.driving.interfaces.IL3_TrafficJamChauffer;
 import sua.autonomouscar.interfaces.ERoadStatus;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
 
 public class MonitorEstadoVia extends Monitor {
 	
@@ -31,24 +30,26 @@ public class MonitorEstadoVia extends Monitor {
 			IKnowledgeProperty funcionConduccionKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("funcion-conduccion");
 			IKnowledgeProperty estadoViaKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("estado-via");
 			
-			NivelAutonomia nivelAutonomia = (NivelAutonomia) nivelAutonomiaKp.getValue();
-			FuncionConduccion funcionConduccion = (FuncionConduccion) funcionConduccionKp.getValue();
+			ENivelAutonomia nivelAutonomia = (ENivelAutonomia) nivelAutonomiaKp.getValue();
+			EFuncionConduccion funcionConduccion = (EFuncionConduccion) funcionConduccionKp.getValue();
 			
 			this.logger.debug(String.format("NM: %s, FC: %s, EV: %s", nivelAutonomia, funcionConduccion, roadStatus));
 			
-			if (nivelAutonomiaKp.getValue() == NivelAutonomia.AutomatizacionParcial && funcionConduccionKp.getValue() == FuncionConduccion.L3_HighwayChauffer &&
+			estadoViaKp.setValue(roadStatus);
+			
+			// ADS_L3-2
+			if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional && funcionConduccion == EFuncionConduccion.L3_HighwayChauffer &&
 					roadStatus != ERoadStatus.FLUID) {
-				this.logger.debug("Road state monitor detects traffic jam");
+				this.logger.debug("Road status monitor detects traffic jam");
 				
-				estadoViaKp.setValue(roadStatus);
-				funcionConduccionKp.setValue(FuncionConduccion.L3_TrafficJamChauffer);
+				funcionConduccionKp.setValue(EFuncionConduccion.L3_TrafficJamChauffer);
 				
-			} else if (nivelAutonomiaKp.getValue() == NivelAutonomia.AutomatizacionParcial && funcionConduccionKp.getValue() == FuncionConduccion.L3_TrafficJamChauffer &&
+			// ADS_L3-4
+			} else if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional && funcionConduccion == EFuncionConduccion.L3_TrafficJamChauffer &&
 					roadStatus == ERoadStatus.FLUID) {
-				this.logger.debug("Road state monitor detects traffic jam ending");
+				this.logger.debug("Road status monitor detects traffic jam ending");
 
-				estadoViaKp.setValue(ERoadStatus.FLUID);
-				funcionConduccionKp.setValue(FuncionConduccion.L3_HighwayChauffer);
+				funcionConduccionKp.setValue(EFuncionConduccion.L3_HighwayChauffer);
 				
 			}
 			

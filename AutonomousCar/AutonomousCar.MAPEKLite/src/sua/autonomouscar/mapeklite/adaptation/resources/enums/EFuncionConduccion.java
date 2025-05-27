@@ -1,6 +1,7 @@
-package autonomouscar.mapeklite.adaptation.resources.enums;
+package sua.autonomouscar.mapeklite.adaptation.resources.enums;
 
-public enum FuncionConduccion {
+public enum EFuncionConduccion {
+	None,
 	L0_ManualDriving,
 	L1_AssistedDriving,
 	L2_AdaptiveCruiseControl,

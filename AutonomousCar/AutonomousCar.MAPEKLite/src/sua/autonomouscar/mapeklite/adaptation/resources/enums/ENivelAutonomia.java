@@ -1,0 +1,8 @@
+package sua.autonomouscar.mapeklite.adaptation.resources.enums;
+
+public enum ENivelAutonomia {
+	L0_ConduccionManual,
+	L1_ConduccionAsistida,
+	L2_AutomatizacionParcial,
+	L3_AutomatizacionCondicional
+}

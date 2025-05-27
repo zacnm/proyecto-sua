@@ -3,7 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: AutonomousCar.simulation.console.commands
 Bundle-SymbolicName: AutonomousCar.simulation.console.commands
 Bundle-Version: 1.0.0
-Import-Package: org.osgi.framework,
+Import-Package: es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.interfaces,
+ es.upv.pros.tatami.adaptation.mapek.lite.resources.ARC.artifacts.components.arc,
+ es.upv.pros.tatami.osgi.utils.components,
+ org.osgi.framework,
  sua.autonomouscar.devices.interfaces,
  sua.autonomouscar.driving.interfaces,
  sua.autonomouscar.driving.l1.assisteddriving,
@@ -17,6 +20,8 @@ Import-Package: org.osgi.framework,
  sua.autonomouscar.infrastructure.driving,
  sua.autonomouscar.interaction.interfaces,
  sua.autonomouscar.interfaces,
+ sua.autonomouscar.mapeklite.adaptation.resources.enums,
+ sua.autonomouscar.mapeklite.adaptation.resources.sondas,
  sua.autonomouscar.simulation
 Bundle-Activator: sua.autonomouscar.simulation.console.commands.Activator
 Automatic-Module-Name: AutonomousCar.simulation.console.commands
