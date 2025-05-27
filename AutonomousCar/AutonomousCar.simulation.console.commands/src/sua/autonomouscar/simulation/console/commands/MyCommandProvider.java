@@ -236,8 +236,7 @@ public class MyCommandProvider {
 	}
 	
 	public void driving(String function) {
-		
-		System.out.println(String.format("Setting driving function: $s", function));
+
 		if ( function.equalsIgnoreCase("l0") ) {
 			L0_ManualDrivingConfigurator.start(context);
 			return;
@@ -267,6 +266,7 @@ public class MyCommandProvider {
 			switch (roadSensor.getRoadType()) {
 				case HIGHWAY:
 					if ( roadSensor.getRoadStatus() == ERoadStatus.FLUID ) {
+						System.out.println("Configuring for highway");
 						L3_HighwayChaufferConfigurator.start(context);
 						return;
 	
@@ -286,14 +286,7 @@ public class MyCommandProvider {
 			
 			System.out.println("Cannot enable L3 Autonomous Driving! Enabling L2 Autonomous Driving ...");
 			this.driving("l2");
-			return;
-			
-			
-			
-			
 		}
-		
-		
 	}
 
 	public void engine(String s, int rpm) {
@@ -346,6 +339,22 @@ public class MyCommandProvider {
 		IDistanceSensor sensor = OSGiUtils.getService(context, IDistanceSensor.class, String.format("(id=%s)", sensorId));
 		if ( sensor != null )
 			sensor.setDistance(distance);
+	}
+	
+	public void error(String l, boolean error) {
+		String sensorId = null;
+		if ( l.equalsIgnoreCase("front") )
+			sensorId = "FrontDistanceSensor";
+		else if ( l.equalsIgnoreCase("rear") )
+			sensorId = "RearDistanceSensor";
+		else if ( l.equalsIgnoreCase("right") )
+			sensorId = "RightDistanceSensor";
+		else if ( l.equalsIgnoreCase("left") )
+			sensorId = "LeftDistanceSensor";
+
+		IDistanceSensor sensor = OSGiUtils.getService(context, IDistanceSensor.class, String.format("(id=%s)", sensorId));
+		if ( sensor != null )
+			sensor.setError(error);
 	}
 
 	public void lidar(String l, int distance) {

@@ -13,8 +13,7 @@ public class VisualIcon extends InteractionMechanism {
 
 	@Override
 	public IInteractionMechanism performTheInteraction(String message) {
-		// 🗣
-		this.showMessage("⚠️");
+		this.showMessage("Icon");
 		return this;
 	}
 

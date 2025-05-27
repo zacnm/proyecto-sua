@@ -67,7 +67,7 @@ public class MonitorTipoVia extends Monitor {
 				funcionConduccionKp.setValue(EFuncionConduccion.L3_CityChauffer);
 				
 			// ADS_L3-6
-			} else if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional && funcionConduccion == EFuncionConduccion.L3_CityChauffer &&
+			} else if (funcionConduccion == EFuncionConduccion.L3_CityChauffer &&
 					estadoVia == ERoadStatus.FLUID && roadType == ERoadType.HIGHWAY) {
 				this.logger.debug("Road status monitor detects transition from city to highway");
 

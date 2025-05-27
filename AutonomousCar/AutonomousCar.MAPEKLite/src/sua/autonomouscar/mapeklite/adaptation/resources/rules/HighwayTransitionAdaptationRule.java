@@ -58,6 +58,7 @@ public class HighwayTransitionAdaptationRule extends AdaptationRule {
 			L3CityChaufferService.stopDriving();
 			L3TrafficJamChaufferService.stopDriving();
 			
+			L3HighwayChaufferService.setRoadSensor("RoadSensor");
 			L3HighwayChaufferService.startDriving();
 		
 			return this.configuracionSistemaActivarTrafficJamChauffer();

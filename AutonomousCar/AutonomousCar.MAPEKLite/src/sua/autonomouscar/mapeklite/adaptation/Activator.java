@@ -1,5 +1,7 @@
 package sua.autonomouscar.mapeklite.adaptation;
 
+import java.util.HashMap;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -8,16 +10,22 @@ import es.upv.pros.tatami.adaptation.mapek.lite.ARC.structures.systemconfigurati
 import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
 import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
 import es.upv.pros.tatami.adaptation.mapek.lite.helpers.SystemConfigurationHelper;
+
+import sua.autonomouscar.driving.interfaces.IL0_ManualDriving;
+import sua.autonomouscar.infrastructure.OSGiUtils;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
+import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorDistanceSensorError;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorEstadoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorTipoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.CityTransitionAdaptationRule;
+import sua.autonomouscar.mapeklite.adaptation.resources.rules.DistanceSensorErrorAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.HighwayTransitionAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TrafficJamTransitionAdaptationRule;
+import sua.autonomouscar.mapeklite.adaptation.resources.sondas.SondaDistanceSensorError;
 import sua.autonomouscar.mapeklite.adaptation.resources.sondas.SondaEstadoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.sondas.SondaFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.sondas.SondaTipoVia;
@@ -42,16 +50,16 @@ public class Activator implements BundleActivator {
 				SystemConfigurationHelper.createSystemConfiguration("InitialConfiguration");
 		
 		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.Engine", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.FrontDistanceSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.HumanSensors", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LeftDistanceSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LeftLineSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LIDAR", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RearDistanceSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RightDistanceSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RightLineSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RoadSensor", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.Speedometer", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.FrontDistanceSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.HumanSensors", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LeftDistanceSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LeftLineSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.LIDAR", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RearDistanceSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RightDistanceSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RightLineSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.RoadSensor", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.Speedometer", "1.0.0");
 		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "device.Steering", "1.0.0");
 
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.FallbackPlan.Emergency", "1.0.0");
@@ -63,13 +71,13 @@ public class Activator implements BundleActivator {
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.HighwayChauffer", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.TrafficJamChauffer", "1.0.0");
 //		
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DashboardDisplay", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DashboardIcon", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DrivingDisplay", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DashboardDisplay", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DashboardIcon", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.DrivingDisplay", "1.0.0");
 		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.NotificationService", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.Seats", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.Seats", "1.0.0");
 		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.Speakers", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
 		
 		BasicMAPEKLiteLoopHelper.INITIAL_SYSTEMCONFIGURATION = initialSystemConfiguration;
 
@@ -85,26 +93,40 @@ public class Activator implements BundleActivator {
 		IKnowledgeProperty tipoViaKp = BasicMAPEKLiteLoopHelper.createKnowledgeProperty("tipo-via");
 		IKnowledgeProperty nivelAutonomiaKp = BasicMAPEKLiteLoopHelper.createKnowledgeProperty("nivel-autonomia");
 		IKnowledgeProperty funcionConduccionKp = BasicMAPEKLiteLoopHelper.createKnowledgeProperty("funcion-conduccion");
+		IKnowledgeProperty sensorsErrorsKp = BasicMAPEKLiteLoopHelper.createKnowledgeProperty("sensor-funcionamiento");
 		
 		estadoViaKp.setValue(ERoadStatus.FLUID);
-		tipoViaKp.setValue(ERoadType.HIGHWAY);
-		nivelAutonomiaKp.setValue(ENivelAutonomia.L3_AutomatizacionCondicional);
+		tipoViaKp.setValue(ERoadType.STD_ROAD);
+		nivelAutonomiaKp.setValue(ENivelAutonomia.L0_ConduccionManual);
 		funcionConduccionKp.setValue(EFuncionConduccion.L0_ManualDriving);
+		sensorsErrorsKp.setValue(new HashMap<String, Boolean>() {{
+			put("FrontDistanceSensor", false);
+			put("LeftDistanceSensor", false);
+			put("RearDistanceSensor", false);
+			put("RightDistanceSensor", false);
+		}});
 
 		// ADAPTATION RULES
 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TrafficJamTransitionAdaptationRule(bundleContext));
 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new HighwayTransitionAdaptationRule(bundleContext));
 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new CityTransitionAdaptationRule(bundleContext));
+		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new DistanceSensorErrorAdaptationRule(bundleContext));
 
 		// MONITORS
 		IAdaptiveReadyComponent estadoViaMonitor =  BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorEstadoVia(bundleContext));
 		IAdaptiveReadyComponent tipoViaMonitor =  BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorTipoVia(bundleContext));
 		IAdaptiveReadyComponent funcionConduccionMonitor =  BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorFuncionConduccion(bundleContext));
+		IAdaptiveReadyComponent sensorErrorMonitor =  BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorDistanceSensorError(bundleContext));
 
 		// PROBES
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaEstadoVia(bundleContext), estadoViaMonitor);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaTipoVia(bundleContext), tipoViaMonitor);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaFuncionConduccion(bundleContext), funcionConduccionMonitor);
+		BasicMAPEKLiteLoopHelper.deployProbe(new SondaDistanceSensorError(bundleContext), sensorErrorMonitor);
+		
+		// INITIAL CONFIGURATION
+		IL0_ManualDriving L0ManualDrivingService = OSGiUtils.getService(context, IL0_ManualDriving.class);
+		L0ManualDrivingService.startDriving();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {

@@ -13,7 +13,7 @@ public class HapticVibration extends InteractionMechanism {
 	@Override
 	public IInteractionMechanism performTheInteraction(String message) {
 
-		this.showMessage("〰️");
+		this.showMessage("Haptic");
 		return this;
 	}
 

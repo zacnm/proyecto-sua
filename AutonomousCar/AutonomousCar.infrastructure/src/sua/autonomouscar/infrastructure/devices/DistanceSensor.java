@@ -9,6 +9,7 @@ import sua.autonomouscar.infrastructure.Thing;
 public class DistanceSensor extends Thing implements IDistanceSensor {
 	
 	public static final String DISTANCE = "distance";
+	public static final String ERROR = "ERROR";
 	public static final int MAX_DISTANCE = 99999;	// expressed in cms
 		
 	public DistanceSensor(BundleContext context, String id) {
@@ -28,6 +29,14 @@ public class DistanceSensor extends Thing implements IDistanceSensor {
 		return this;
 	}
 
+	@Override
+	public boolean getError() {
+		return (boolean) this.getProperty(DistanceSensor.ERROR);
+	}
 
-
+	@Override
+	public IDistanceSensor setError(boolean error) {
+		this.setProperty(DistanceSensor.ERROR, error);
+		return this;
+	}
 }

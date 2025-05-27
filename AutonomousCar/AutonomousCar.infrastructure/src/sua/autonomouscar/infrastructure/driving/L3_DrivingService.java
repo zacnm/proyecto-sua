@@ -36,6 +36,7 @@ public abstract class L3_DrivingService extends L2_DrivingService implements IL3
 
 	@Override
 	public void setRoadSensor(String sensor) {
+		System.out.println(String.format("Setting road sensor: %s", sensor));
 		this.roadSensor = sensor;
 	}
 	

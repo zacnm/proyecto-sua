@@ -39,6 +39,7 @@ public abstract class L1_DrivingService extends L0_DrivingService implements IL1
 	
 	@Override
 	public void setFrontDistanceSensor(String sensor) {
+		System.out.println(String.format("Front distance sensor set: %s", sensor));
 		this.frontDistanceSensor = sensor;
 		return;
 	}

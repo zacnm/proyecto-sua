@@ -12,7 +12,7 @@ public class AuditoryBeep extends InteractionMechanism {
 
 	@Override
 	public IInteractionMechanism performTheInteraction(String message) {
-		this.showMessage("🔔");
+		this.showMessage("Beep");
 		return this;
 	}
 
