@@ -27,7 +27,6 @@ public class HumanSensors extends Thing implements IHumanSensors {
 		return this;
 	}
 	
-	
 	@Override
 	public IHumanSensors setCopilotSeatSensor(ISeatSensor sensor) {
 		this.copilotSeatSensor = sensor;

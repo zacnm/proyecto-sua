@@ -1,5 +1,7 @@
 package sua.autonomouscar.mapeklite.adaptation.resources.rules;
 
+import java.util.List;
+
 import org.osgi.framework.BundleContext;
 
 import es.upv.pros.tatami.adaptation.mapek.lite.ARC.structures.systemconfiguration.interfaces.IRuleComponentsSystemConfiguration;
@@ -15,29 +17,32 @@ import sua.autonomouscar.driving.interfaces.IL3_CityChauffer;
 import sua.autonomouscar.driving.interfaces.IL3_HighwayChauffer;
 import sua.autonomouscar.driving.interfaces.IL3_TrafficJamChauffer;
 import sua.autonomouscar.infrastructure.OSGiUtils;
+import sua.autonomouscar.infrastructure.interaction.NotificationService;
+import sua.autonomouscar.interaction.interfaces.IInteractionMechanism;
+import sua.autonomouscar.interaction.interfaces.INotificationService;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
 
-public class HighwayTransitionAdaptationRule extends AdaptationRule {
+public class DriverInteractionAdaptationRule extends AdaptationRule {
 	
-	public static String ID = "Regla Transición a Highway";
+	public static String ID = "Regla Interacción con Conductor";
 	
-	IKnowledgeProperty nivelAutonomiaKp = null;
-	IKnowledgeProperty funcionConduccionKp = null;
+	IKnowledgeProperty handsOnWheelKp = null;
+	IKnowledgeProperty asientoConductorKp = null;
 
-	public HighwayTransitionAdaptationRule(BundleContext context) {
+	public DriverInteractionAdaptationRule(BundleContext context) {
 		super(context, ID);
-		this.setListenToKnowledgePropertyChanges("nivel-autonomia");
-		this.setListenToKnowledgePropertyChanges("funcion-conduccion");
+		this.setListenToKnowledgePropertyChanges("hands-on-wheel");
+		this.setListenToKnowledgePropertyChanges("asiento-conductor-ocupado");
 		
-		nivelAutonomiaKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("nivel-autonomia");
-		funcionConduccionKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("funcion-conduccion");
+		handsOnWheelKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("hands-on-wheel");
+		asientoConductorKp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("asiento-conductor-ocupado");
 	}
 
 	@Override
 	public boolean checkAffectedByChange(IKnowledgeProperty property) {
-		if (nivelAutonomiaKp == null || nivelAutonomiaKp.getValue() != ENivelAutonomia.L3_AutomatizacionCondicional ||
-				funcionConduccionKp == null || funcionConduccionKp.getValue() != EFuncionConduccion.L3_HighwayChauffer) {
+		if (handsOnWheelKp == null || handsOnWheelKp.getValue() == null ||
+				asientoConductorKp == null || asientoConductorKp.getValue() == null) {
 			return false;
 		}
 		
@@ -46,31 +51,30 @@ public class HighwayTransitionAdaptationRule extends AdaptationRule {
 
 	@Override
 	public IRuleSystemConfiguration onExecute(IKnowledgeProperty property) throws RuleException {
-		ENivelAutonomia nivelAutonomia = (ENivelAutonomia) nivelAutonomiaKp.getValue();
-		EFuncionConduccion funcionConduccion = (EFuncionConduccion) funcionConduccionKp.getValue();
+		boolean handsOnWheel = (boolean) handsOnWheelKp.getValue();
+		boolean asientoConductorOcupado = (boolean) asientoConductorKp.getValue();
 		
-		if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional && funcionConduccion == EFuncionConduccion.L3_HighwayChauffer) {
-
-			IL3_CityChauffer L3CityChaufferService = OSGiUtils.getService(context, IL3_CityChauffer.class);
-			IL3_HighwayChauffer L3HighwayChaufferService = OSGiUtils.getService(context, IL3_HighwayChauffer.class);
-			IL3_TrafficJamChauffer L3TrafficJamChaufferService = OSGiUtils.getService(context, IL3_TrafficJamChauffer.class);
-			
-			L3CityChaufferService.stopDriving();
-			L3TrafficJamChaufferService.stopDriving();
-			
-			L3HighwayChaufferService.startDriving();
+		NotificationService notificationService = (NotificationService) OSGiUtils.getService(this.context, INotificationService.class);
+		List<IInteractionMechanism> interactionMechanisms = OSGiUtils.getServices(this.context, IInteractionMechanism.class);
+		var t = interactionMechanisms.stream().map;
 		
-			return this.configuracionSistemaActivarHighwayChauffer();
+		if (asientoConductorOcupado) {
+			if (handsOnWheel) {
+				notificationService.addInteractionMechanism("SteeringWheel_HapticVibration");
+				notificationService.addInteractionMechanism("DashboardIcon_VisualIcon");
+			}
+			
 		} else {
 			throw new RuleException("Cannot understand knowledge", "Not executing");
 		}
+		
+		return this.configuracionSistemaActivarTrafficJamChauffer();
 	}
 
-	protected IRuleComponentsSystemConfiguration configuracionSistemaActivarHighwayChauffer() {
+	protected IRuleComponentsSystemConfiguration configuracionSistemaActivarTrafficJamChauffer() {
 		IRuleComponentsSystemConfiguration nextSystemConfiguration = 
 				SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
-		System.out.println("setting next system config");
-
+		
 		return nextSystemConfiguration;		
 		
 	}

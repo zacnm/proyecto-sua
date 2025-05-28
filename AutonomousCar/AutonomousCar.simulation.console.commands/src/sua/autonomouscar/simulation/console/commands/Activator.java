@@ -175,6 +175,10 @@ public class Activator implements BundleActivator {
 					//
 					"driving",
 					
+					// notification : notifica un mensaje al usuario mediante los mecanismos de interacción activos
+					
+					"notification",
+					
 				//
 				// SIMULADOR
 				// 
