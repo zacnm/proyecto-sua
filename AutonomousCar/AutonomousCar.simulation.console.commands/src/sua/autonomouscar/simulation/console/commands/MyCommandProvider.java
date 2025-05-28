@@ -16,6 +16,7 @@ import sua.autonomouscar.driving.interfaces.IL3_DrivingService;
 import sua.autonomouscar.infrastructure.OSGiUtils;
 import sua.autonomouscar.infrastructure.devices.DistanceSensor;
 import sua.autonomouscar.infrastructure.driving.DrivingService;
+import sua.autonomouscar.interaction.interfaces.INotificationService;
 import sua.autonomouscar.interfaces.EFaceStatus;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
@@ -372,6 +373,11 @@ public class MyCommandProvider {
 		IDistanceSensor sensor = OSGiUtils.getService(context, IDistanceSensor.class, String.format("(id=%s)", sensorId));
 		if ( sensor != null )
 			sensor.setDistance(distance);
+	}
+	
+	public void notification() {
+		INotificationService notificationService = OSGiUtils.getService(context, INotificationService.class);
+		notificationService.notify("Test message");
 	}
 	
 	public void next() {

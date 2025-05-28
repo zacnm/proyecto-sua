@@ -64,10 +64,10 @@ public class Activator implements BundleActivator {
 
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.FallbackPlan.Emergency", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.FallbackPlan.ParkInTheRoadShoulder", "1.0.0");
-		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L0.ManualDriving", "1.0.0");
+//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L0.ManualDriving", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L1.AssistedDriving", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L2.AdaptiveCruiseControl", "1.0.0");
-//		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.CityChauffer", "1.0.0");
+		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.CityChauffer", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.HighwayChauffer", "1.0.0");
 //		SystemConfigurationHelper.addComponent(initialSystemConfiguration, "driving.L3.TrafficJamChauffer", "1.0.0");
 //		
@@ -96,9 +96,9 @@ public class Activator implements BundleActivator {
 		IKnowledgeProperty sensorsErrorsKp = BasicMAPEKLiteLoopHelper.createKnowledgeProperty("sensor-funcionamiento");
 		
 		estadoViaKp.setValue(ERoadStatus.FLUID);
-		tipoViaKp.setValue(ERoadType.STD_ROAD);
-		nivelAutonomiaKp.setValue(ENivelAutonomia.L0_ConduccionManual);
-		funcionConduccionKp.setValue(EFuncionConduccion.L0_ManualDriving);
+		tipoViaKp.setValue(ERoadType.CITY);
+		nivelAutonomiaKp.setValue(ENivelAutonomia.L3_AutomatizacionCondicional);
+		funcionConduccionKp.setValue(EFuncionConduccion.L3_CityChauffer);
 		sensorsErrorsKp.setValue(new HashMap<String, Boolean>() {{
 			put("FrontDistanceSensor", false);
 			put("LeftDistanceSensor", false);
