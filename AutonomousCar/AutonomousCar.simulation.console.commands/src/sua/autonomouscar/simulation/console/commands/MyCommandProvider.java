@@ -1,6 +1,16 @@
 package sua.autonomouscar.simulation.console.commands;
 
+import java.lang.reflect.Field;
+
 import org.osgi.framework.BundleContext;
+
+import es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.interfaces.IAdaptiveReadyComponent;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.resources.adaptation.SelfConfigureProbe;
+import es.upv.pros.tatami.adaptation.mapek.lite.resources.ARC.artifacts.components.arc.ProbeARC;
+import es.upv.pros.tatami.osgi.utils.components.SearchTools;
+import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
 
 import sua.autonomouscar.devices.interfaces.IDistanceSensor;
 import sua.autonomouscar.devices.interfaces.IEngine;
@@ -13,16 +23,23 @@ import sua.autonomouscar.driving.interfaces.IDrivingService;
 import sua.autonomouscar.driving.interfaces.IL1_DrivingService;
 import sua.autonomouscar.driving.interfaces.IL2_DrivingService;
 import sua.autonomouscar.driving.interfaces.IL3_DrivingService;
-import sua.autonomouscar.infrastructure.OSGiUtils;
-import sua.autonomouscar.infrastructure.devices.DistanceSensor;
-import sua.autonomouscar.infrastructure.driving.DrivingService;
+import sua.autonomouscar.infraestructure.OSGiUtils;
+import sua.autonomouscar.infraestructure.devices.DistanceSensor;
+import sua.autonomouscar.infraestructure.driving.DrivingService;
 import sua.autonomouscar.interfaces.EFaceStatus;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
 import sua.autonomouscar.interfaces.IIdentifiable;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowlege.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaEstadoVia;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaNivelAutonomia;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaTipoVia;
 import sua.autonomouscar.simulation.IManualSimulatorStepsManager;
 
 public class MyCommandProvider {
+
+	protected static SmartLogger logger = SmartLogger.getLogger(MyCommandProvider.class);
 
 	BundleContext context = null;
 
@@ -166,17 +183,35 @@ public class MyCommandProvider {
 
 	}
 	
-	public void configure() {
-		L0_ManualDrivingConfigurator.configure(context);
-		L1_AssistedDrivingConfigurator.configure(context);
-		L2_AdaptiveCruiseControlConfigurator.configure(context);
-		L2_LaneKeepingAssistConfigurator.configure(context);
-		L3_HighwayChaufferConfigurator.configure(context);
-		L3_TrafficJamChaufferConfigurator.configure(context);
-		L3_CityChaufferConfigurator.configure(context);
-		EmergencyFallbackPlanConfigurator.configure(context);
-		ParkInTheRoadShoulderFallbackPlanConfigurator.configure(context);
-		NotificationServiceConfigurator.configure(context);
+	
+	public void knowledge() {
+			
+			IKnowledgeProperty kp_tipoVia = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.TIPO_VIA);
+			
+			String tipoVia = "UNKNOWN";
+			if ( kp_tipoVia != null && kp_tipoVia.getValue() != null )
+				tipoVia = kp_tipoVia.getValue().toString();
+					
+			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
+			System.out.println("*  KNOWLEDGE");
+			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
+			System.out.println(String.format("*   tipo-via: %s", tipoVia));
+			// ...
+			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
+
+	}
+	
+	
+	public void initialize() {
+		SelfConfigureProbe selfConfigureProbe = getProbe(SelfConfigureProbe.ID);
+		selfConfigureProbe.sendSelfConfigureRequest();
+	}
+
+	@SuppressWarnings("unchecked")
+	private <TProbe> TProbe getProbe(String probeId) {
+		String sondaFilter = String.format("(%s=%s)", IIdentifiable.ID,  probeId);
+		IAdaptiveReadyComponent sondaARC = SearchTools.doSearch(this.context, IAdaptiveReadyComponent.class, sondaFilter);
+		return (TProbe) sondaARC.getServiceSupply(ProbeARC.SUPPLY_PROBESERVICE);
 	}
 	
 	public void driver(String property, String s) {
@@ -184,11 +219,11 @@ public class MyCommandProvider {
 		if ( sensor == null )
 			return;
 		if ( property.equalsIgnoreCase("face") ) {
-			if ( s.equalsIgnoreCase("looking-forward") )
+			if ( s.equalsIgnoreCase("looking-forward") || s.equalsIgnoreCase("l") )
 				sensor.setFaceStatus(EFaceStatus.LOOKING_FORWARD);
-			else if ( s.equalsIgnoreCase("distracted") )
+			else if ( s.equalsIgnoreCase("distracted") || s.equalsIgnoreCase("d") )
 				sensor.setFaceStatus(EFaceStatus.DISTRACTED);
-			else if ( s.equalsIgnoreCase("sleeping") )
+			else if ( s.equalsIgnoreCase("sleeping") || s.equalsIgnoreCase("s") )
 				sensor.setFaceStatus(EFaceStatus.SLEEPING);
 			
 		} else if ( property.equalsIgnoreCase("hands") ) {
@@ -205,22 +240,40 @@ public class MyCommandProvider {
 		if ( rs == null )
 			return;
 		if ( property.equalsIgnoreCase("type") ) {
-			if ( s.equalsIgnoreCase("std") )
-				rs.setRoadType(ERoadType.STD_ROAD);
-			else if ( s.equalsIgnoreCase("city") )
-				rs.setRoadType(ERoadType.CITY);
-			else if ( s.equalsIgnoreCase("highway") )
-				rs.setRoadType(ERoadType.HIGHWAY);
-			else if ( s.equalsIgnoreCase("off-road") )
-				rs.setRoadType(ERoadType.OFF_ROAD);
+			
+			ERoadType roadType = null;
+			
+			if ( s.equalsIgnoreCase("std") || s.equalsIgnoreCase("s") )
+				roadType = ERoadType.STD_ROAD;
+			else if ( s.equalsIgnoreCase("city") || s.equalsIgnoreCase("c") )
+				roadType = ERoadType.CITY;
+			else if ( s.equalsIgnoreCase("highway") || s.equalsIgnoreCase("h") )
+				roadType = ERoadType.HIGHWAY;
+			else if ( s.equalsIgnoreCase("off-road") || s.equalsIgnoreCase("o") )
+				roadType = ERoadType.OFF_ROAD;
+			
+			if (roadType != null) {
+				SondaTipoVia sondaTipoVia = getProbe(SondaTipoVia.ID);
+				sondaTipoVia.reportRoadType(roadType);
+				rs.setRoadType(roadType);
+			}
 			
 		} else if ( property.equalsIgnoreCase("status") ) {
-			if ( s.equalsIgnoreCase("fluid") ) {
-				rs.setRoadStatus(ERoadStatus.FLUID);
-			} else if ( s.equalsIgnoreCase("jam") ) {
-				rs.setRoadStatus(ERoadStatus.JAM);
-			} else if ( s.equalsIgnoreCase("collapsed") ) {
-				rs.setRoadStatus(ERoadStatus.COLLAPSED);
+			
+			ERoadStatus roadStatus = null;
+			
+			if ( s.equalsIgnoreCase("fluid") || s.equalsIgnoreCase("f") ) {
+				roadStatus = ERoadStatus.FLUID;
+			} else if ( s.equalsIgnoreCase("jam") || s.equalsIgnoreCase("j") ) {
+				roadStatus = ERoadStatus.JAM;
+			} else if ( s.equalsIgnoreCase("collapsed") || s.equalsIgnoreCase("c") ) {
+				roadStatus = ERoadStatus.COLLAPSED;
+			}
+			
+			if (roadStatus != null) {
+				SondaEstadoVia sondaEstadoVia = getProbe(SondaEstadoVia.ID);
+				sondaEstadoVia.reportRoadStatus(roadStatus);
+				rs.setRoadStatus(roadStatus);
 			}
 		}
 	}
@@ -237,62 +290,33 @@ public class MyCommandProvider {
 	
 	public void driving(String function) {
 		
-		if ( function.equalsIgnoreCase("l0") ) {
-			
-			L0_ManualDrivingConfigurator.start(context);
-			return;
-			
-		} else if ( function.equalsIgnoreCase("l1") ) {
-			
-			L1_AssistedDrivingConfigurator.start(context);
-			return;
-
-		} else if ( function.equalsIgnoreCase("l2") ) {
-			
-			if ( Math.random() > 0.5 )
-				L2_AdaptiveCruiseControlConfigurator.start(context);
-			else
-				L2_LaneKeepingAssistConfigurator.start(context);
-			return;
-
-	
-		} else if ( function.equalsIgnoreCase("l3") ) {
-			
-			IRoadSensor roadSensor = OSGiUtils.getService(context, IRoadSensor.class);
-			if (roadSensor == null) {
-				System.out.println("No RoadSensor found! Enabling L2 Autonomous Driving ...");
-				this.driving("l2");
+		ENivelAutonomia nivelAutonomia = null;
+		
+		switch (function.toUpperCase()) {
+			case "L0":
+				nivelAutonomia = ENivelAutonomia.L0_ConduccionManual;
+				break;
+			case "L1":
+				nivelAutonomia = ENivelAutonomia.L1_ConduccionAsistida;
+				break;
+			case "L2":
+				nivelAutonomia = ENivelAutonomia.L2_AutomatizacionParcial;
+				break;
+			case "L3":
+				nivelAutonomia = ENivelAutonomia.L3_AutomatizacionCondicional;
+				break;
+			default:
+				logger.error("Unknown driving function: " + function);
 				return;
-			}
-			
-			switch (roadSensor.getRoadType()) {
-				case HIGHWAY:
-					if ( roadSensor.getRoadStatus() == ERoadStatus.FLUID ) {
-						L3_HighwayChaufferConfigurator.start(context);
-						return;
-	
-					} else {
-						L3_TrafficJamChaufferConfigurator.start(context);
-						return;
-					}
-					
-				case CITY:
-						L3_CityChaufferConfigurator.start(context);
-					return;
-	
-				default:
-					break;
-
-			}
-			
-			System.out.println("Cannot enable L3 Autonomous Driving! Enabling L2 Autonomous Driving ...");
-			this.driving("l2");
-			return;
-			
-			
-			
-			
 		}
+		
+		if (nivelAutonomia != null) {
+			SondaNivelAutonomia sondaNivelAutonomia = getProbe(SondaNivelAutonomia.ID);
+			sondaNivelAutonomia.reportNivelAutonomia(nivelAutonomia);
+			return;
+		}
+		
+		return;
 		
 		
 	}

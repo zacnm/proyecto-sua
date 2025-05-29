@@ -2,15 +2,15 @@ package sua.autonomouscar.driving.parkintheroadshoulderfallbackplan;
 
 import org.osgi.framework.BundleContext;
 
+import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
 import sua.autonomouscar.devices.interfaces.IDistanceSensor;
 import sua.autonomouscar.devices.interfaces.ILineSensor;
 import sua.autonomouscar.devices.interfaces.ISpeedometer;
 import sua.autonomouscar.driving.interfaces.IDrivingService;
 import sua.autonomouscar.driving.interfaces.IParkInTheRoadShoulderFallbackPlan;
-import sua.autonomouscar.infrastructure.OSGiUtils;
-import sua.autonomouscar.infrastructure.devices.Steering;
-import sua.autonomouscar.infrastructure.driving.FallbackPlan;
-import sua.autonomouscar.interfaces.IIdentifiable;
+import sua.autonomouscar.infraestructure.OSGiUtils;
+import sua.autonomouscar.infraestructure.devices.Steering;
+import sua.autonomouscar.infraestructure.driving.FallbackPlan;
 
 public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements IParkInTheRoadShoulderFallbackPlan {
 	
@@ -22,36 +22,37 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 	
 	public static final int ANCHO_CARRIL = 3;
 
-	protected String rightDistanceSensor = null;
-	protected String rightLineSensor = null;
+	protected IDistanceSensor rightDistanceSensor = null;
+	protected ILineSensor rightLineSensor = null;
 	
 	protected int phase = 1;
 		
 	public ParkInTheRoadShoulderFallbackPlan(BundleContext context, String id) {
 		super(context, id);
+		logger = SmartLogger.getLogger(IParkInTheRoadShoulderFallbackPlan.class.getName());
 		this.addImplementedInterface(IParkInTheRoadShoulderFallbackPlan.class.getName());
 	}
 	
 	
 	@Override
-	public void setRightDistanceSensor(String sensor) {
+	public void setRightDistanceSensor(IDistanceSensor sensor) {
 		this.rightDistanceSensor = sensor;
 		return;
 	}
 	
 	protected IDistanceSensor getRightDistanceSensor() {
-		return OSGiUtils.getService(context, IDistanceSensor.class, String.format("(%s=%s)", IIdentifiable.ID, this.rightDistanceSensor));
+		return this.rightDistanceSensor;
 	}
 
 		
 	@Override
-	public void setRightLineSensor(String sensor) {
+	public void setRightLineSensor(ILineSensor sensor) {
 		this.rightLineSensor = sensor;
 		return;
 	}
 	
 	protected ILineSensor getRightLineSensor() {
-		return OSGiUtils.getService(context, ILineSensor.class, String.format("(%s=%s)", IIdentifiable.ID, this.rightLineSensor));
+		return this.rightLineSensor;
 	}
 
 	
@@ -64,7 +65,7 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 		// Fase 1 : nos movemos a la derecha, si no hay obstáculo, hasta cruzar la línea de la calzada
 		if ( this.phase == 1 ) {
 			if ( this.getRightDistanceSensor().getDistance() > ANCHO_CARRIL ) {
-				this.debugMessage("Turning to the right ...");
+				logger.info("Turning to the right ...");
 				this.getSteering().rotateRight(Steering.MEDIUM_CORRECTION_ANGLE);
 				this.phase = 2;
 				return this;
@@ -73,9 +74,9 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 		
 		// Fase 2 : esperamos a que el sensor de carril derecho indique que estamos cruzando la línea ...
 		if ( this.phase == 2 ) {
-			this.debugMessage("Waiting to detect the right line");
+			logger.info("Waiting to detect the right line");
 			if ( this.getRightLineSensor().isLineDetected() ) {
-				this.debugMessage("Line Detected ...");
+				logger.info("Line Detected ...");
 				this.phase = 3;
 				return this;
 			}
@@ -83,10 +84,10 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 		
 		// Fase 3 : cuando hemos cruzado el carril, nos preparamos para realizar la parada ...
 		if ( this.phase == 3 ) {
-			this.debugMessage("Waiting to cross the line ...");
+			logger.info("Waiting to cross the line ...");
 			if ( !this.getRightLineSensor().isLineDetected() ) {
-				this.debugMessage("Reached the Road Shoulder");
-				this.debugMessage("Centering the steering");
+				logger.info("Reached the Road Shoulder");
+				logger.info("Centering the steering");
 				this.getSteering().center();
 				this.phase = 4;
 				return this;
@@ -98,7 +99,7 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 			
 			ISpeedometer speedometer = OSGiUtils.getService(context, ISpeedometer.class);
 			int currentSpeed = speedometer.getCurrentSpeed();
-			this.debugMessage(String.format("Speed: %d Km/h" , currentSpeed));
+			logger.info(String.format("Speed: %d Km/h" , currentSpeed));
 
 			if ( currentSpeed > 0 ) {
 
@@ -113,7 +114,7 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 				else if ( Math.abs(diffSpeed) > 1 ) { rpmCorrection = MY_SMOOTH_ACCELERATION_RPM; rpmAppliedCorrection = "smooth"; }
 				
 				this.getEngine().decelerate(rpmCorrection);
-				this.debugMessage(String.format("Decelerating (%s) ...", rpmAppliedCorrection));
+				logger.info(String.format("Decelerating (%s) ...", rpmAppliedCorrection));
 
 			} else {
 				return this.stopDriving();
@@ -130,11 +131,35 @@ public class ParkInTheRoadShoulderFallbackPlan extends FallbackPlan implements I
 
 	@Override
 	public IDrivingService stopTheDrivingFunction() {
-		this.debugMessage("Parked in the Road Shoulder");
+		logger.info("Parked in the Road Shoulder");
 		return this;
 	}
 	
 	
+	@Override
+	protected boolean checkRequirementsToPerfomTheDrivingService() {
+		boolean ok = true;
+		if ( this.getEngine() == null ) {
+			ok = true;
+			logger.warn("Required Engine ...");
+		}
+		if ( this.getSteering() == null ) {
+			ok = true;
+			logger.warn("Required Steering ...");
+		}
+		if ( this.getRightLineSensor() == null ) {
+			ok = true;
+			logger.warn("Required Right Line Sensor ...");
+		}
+		if ( this.getRightDistanceSensor() == null ) {
+			ok = true;
+			logger.warn("Required Right Distance Sensor ...");
+		}
+		if ( super.checkRequirementsToPerfomTheDrivingService() )
+			ok = true;
+		
+		return ok;
+	}	
 
 
 

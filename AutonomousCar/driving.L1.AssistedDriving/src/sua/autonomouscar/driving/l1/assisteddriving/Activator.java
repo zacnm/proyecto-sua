@@ -7,7 +7,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected L1_AssistedDriving drivingFunction = null;
+	protected L1_AssistedDrivingARC drivingFunctionARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -15,14 +15,13 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.drivingFunction = new L1_AssistedDriving(bundleContext, "L1_AssistedDriving");
-		this.drivingFunction.registerThing();
+		this.drivingFunctionARC = new L1_AssistedDrivingARC(bundleContext, "L1_AssistedDriving");
+		this.drivingFunctionARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.drivingFunction != null )
-			this.drivingFunction.unregisterThing();
-		
+		this.drivingFunctionARC.stop();
+		this.drivingFunctionARC = null;
 		Activator.context = null;
 	}
 

@@ -1,0 +1,19 @@
+package autonomouscar.mapeklite.adaptation.resources.probes;
+
+import org.osgi.framework.BundleContext;
+import sua.autonomouscar.interfaces.ERoadType;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Probe;
+
+public class SondaNivelAutonomia extends Probe {
+	
+	public static String ID = "Sonda Tipo Via";
+
+	public SondaNivelAutonomia(BundleContext context) {
+		super(context, ID);
+	}
+	
+	public void reportRoadType(ERoadType roadType) {
+		this.reportMeasure(roadType);
+	}
+
+}

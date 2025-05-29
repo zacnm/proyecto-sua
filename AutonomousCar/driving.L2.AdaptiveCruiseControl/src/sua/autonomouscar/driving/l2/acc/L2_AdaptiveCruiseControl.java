@@ -2,10 +2,11 @@ package sua.autonomouscar.driving.l2.acc;
 
 import org.osgi.framework.BundleContext;
 
+import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
 import sua.autonomouscar.driving.interfaces.IDrivingService;
 import sua.autonomouscar.driving.interfaces.IL2_AdaptiveCruiseControl;
-import sua.autonomouscar.infrastructure.devices.Engine;
-import sua.autonomouscar.infrastructure.driving.L2_DrivingService;
+import sua.autonomouscar.infraestructure.devices.Engine;
+import sua.autonomouscar.infraestructure.driving.L2_DrivingService;
 
 public class L2_AdaptiveCruiseControl extends L2_DrivingService implements IL2_AdaptiveCruiseControl {
 	
@@ -13,6 +14,7 @@ public class L2_AdaptiveCruiseControl extends L2_DrivingService implements IL2_A
 	
 	public L2_AdaptiveCruiseControl(BundleContext context, String id) {
 		super(context, id);
+		logger = SmartLogger.getLogger(context.getBundle().getSymbolicName());
 		this.addImplementedInterface(IL2_AdaptiveCruiseControl.class.getName());
 		this.setLongitudinalSecurityDistance(DEFAULT_LONGITUDINAL_SECURITY_DISTANCE); // cms
 	}
@@ -27,13 +29,13 @@ public class L2_AdaptiveCruiseControl extends L2_DrivingService implements IL2_A
 			
 				this.getEngine().decelerate(Engine.MEDIUM_ACCELERATION_RPM);
 				correction_performed = true;
-				this.debugMessage("Font Distance Warning: ⊼");
+				logger.info("Font Distance Warning: ⊼");
 				this.getNotificationService().notify("Font Distance Warning: Braking ...");
 		}
 		
 		// Si todo va bien, indicamos que seguimos como estamos ...
 		if ( !correction_performed ) {
-			this.debugMessage("Monitoring driving parameters. Nothing to warn ...");
+			logger.info("Monitoring driving parameters. Nothing to warn ...");
 		}
 				
 		return this;

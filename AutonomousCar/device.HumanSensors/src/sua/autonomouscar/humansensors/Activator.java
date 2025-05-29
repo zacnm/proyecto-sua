@@ -3,20 +3,19 @@ package sua.autonomouscar.humansensors;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.devices.DriverFaceMonitor;
-import sua.autonomouscar.infrastructure.devices.HandsOnWheelSensor;
-import sua.autonomouscar.infrastructure.devices.HumanSensors;
-import sua.autonomouscar.infrastructure.devices.SeatSensor;
-import sua.autonomouscar.interfaces.EFaceStatus;
+import sua.autonomouscar.infraestructure.devices.ARC.DriverFaceMonitorARC;
+import sua.autonomouscar.infraestructure.devices.ARC.HandsOnWheelSensorARC;
+import sua.autonomouscar.infraestructure.devices.ARC.HumanSensorsARC;
+import sua.autonomouscar.infraestructure.devices.ARC.SeatSensorARC;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected HumanSensors humanSensors = null;
-	protected DriverFaceMonitor driverFaceMonitor = null;
-	protected SeatSensor driverSeatSensor = null;
-	protected SeatSensor copilotSeatSensor = null;
-	protected HandsOnWheelSensor howSensor = null;
+	protected HumanSensorsARC humanSensorsARC = null;
+	protected DriverFaceMonitorARC driverFaceMonitorARC = null;
+	protected SeatSensorARC driverSeatSensorARC = null;
+	protected SeatSensorARC copilotSeatSensorARC = null;
+	protected HandsOnWheelSensorARC howSensorARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -27,46 +26,48 @@ public class Activator implements BundleActivator {
 		
 		
 		// Driver Face Monitor
-		this.driverFaceMonitor = new DriverFaceMonitor(bundleContext, "DriverFaceMonitor");
-		this.driverFaceMonitor.setFaceStatus(EFaceStatus.LOOKING_FORWARD);
-		this.driverFaceMonitor.registerThing();
-		
+		this.driverFaceMonitorARC = new DriverFaceMonitorARC(bundleContext, "device.DriverFaceMonitor", "DriverFaceMonitor");
+		this.driverFaceMonitorARC.start();
+	
 		
 		// Driver Seat Sensor
-		this.driverSeatSensor = new SeatSensor(bundleContext, "DriverSeatSensor");
-		this.driverSeatSensor.setSeatOccupied(true);
-		this.driverSeatSensor.registerThing();
-		
+		this.driverSeatSensorARC = new SeatSensorARC(bundleContext, "device.DriverSeatSensor", "DriverSeatSensor");
+		this.driverSeatSensorARC.start();
 		
 		// Copilot Seat Sensor
-		this.copilotSeatSensor = new SeatSensor(bundleContext, "CopilotSeatSensor");
-		this.copilotSeatSensor.registerThing();
+		this.copilotSeatSensorARC = new SeatSensorARC(bundleContext, "device.CopilotSeatSensor", "CopilotSeatSensor");
+		this.copilotSeatSensorARC.start();
 		
 		// Driver Hands On Wheel Sensor
-		this.howSensor = new HandsOnWheelSensor(bundleContext, "HandsOnWheelSensor");
-		this.howSensor.registerThing();
+		this.howSensorARC = new HandsOnWheelSensorARC(bundleContext, "device.HandsOnWheelSensor", "HandsOnWheelSensor");
+		this.howSensorARC.start();
 
 		// Human Sensors (aggregate)
-		this.humanSensors = new HumanSensors(bundleContext, "HumanSensors");
-		this.humanSensors.setFaceMonitor(this.driverFaceMonitor);
-		this.humanSensors.setDriverSeatSensor(this.driverSeatSensor);
-		this.humanSensors.setCopilotSeatSensor(this.copilotSeatSensor);
-		this.humanSensors.setHandsOnWheelSensor(this.howSensor);
-		this.humanSensors.registerThing();
+		this.humanSensorsARC = new HumanSensorsARC(bundleContext, "device.HumanSensors", "HumanSensors");
+		this.humanSensorsARC.start();
+
+		
+		this.humanSensorsARC.bindService(HumanSensorsARC.REQUIRED_FACEMONITOR, 
+									  driverFaceMonitorARC.getServiceSupply(DriverFaceMonitorARC.PROVIDED_SENSOR));
+
+		this.humanSensorsARC.bindService(HumanSensorsARC.REQUIRED_DRIVERSEATSENSOR, 
+				  driverSeatSensorARC.getServiceSupply(SeatSensorARC.PROVIDED_SENSOR));
+
+		this.humanSensorsARC.bindService(HumanSensorsARC.REQUIRED_COPILOTSEATSENSOR,
+				  copilotSeatSensorARC.getServiceSupply(SeatSensorARC.PROVIDED_SENSOR));
+
+		this.humanSensorsARC.bindService(HumanSensorsARC.REQUIRED_HANDSONWHEELSENSOR, 
+				howSensorARC.getServiceSupply(HandsOnWheelSensorARC.PROVIDED_SENSOR));
+	    
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.humanSensors != null )
-			this.humanSensors.unregisterThing();
-		if ( this.driverFaceMonitor != null )
-			this.driverFaceMonitor.unregisterThing();
-		if ( this.driverSeatSensor != null )
-			this.driverSeatSensor.unregisterThing();
-		if ( this.copilotSeatSensor != null )
-			this.copilotSeatSensor.unregisterThing();
-		if ( this.howSensor != null )
-			this.howSensor.unregisterThing();
-		
+
+		this.howSensorARC.stop();			this.howSensorARC = null;
+		this.driverSeatSensorARC.stop();	this.driverSeatSensorARC = null;
+		this.copilotSeatSensorARC.stop();	this.copilotSeatSensorARC = null;
+		this.driverFaceMonitorARC.stop();	this.driverFaceMonitorARC = null;
+		this.humanSensorsARC.stop();		this.humanSensorsARC = null;
 		Activator.context = null;
 	}
 

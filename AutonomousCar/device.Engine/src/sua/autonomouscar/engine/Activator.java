@@ -2,13 +2,14 @@ package sua.autonomouscar.engine;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import sua.autonomouscar.infrastructure.devices.Engine;
+
+import sua.autonomouscar.infraestructure.devices.ARC.EngineARC;
 
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	private Engine engine = null;
+	private EngineARC engineARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -16,16 +17,13 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		
-		this.engine = new Engine(bundleContext, "Engine");
-		this.engine.registerThing();
-		
+		this.engineARC = new EngineARC(bundleContext, "Engine");
+		this.engineARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.engine != null )
-			this.engine.unregisterThing();
-
+		this.engineARC.stop();
+		this.engineARC = null;
 		Activator.context = null;
 	}
 

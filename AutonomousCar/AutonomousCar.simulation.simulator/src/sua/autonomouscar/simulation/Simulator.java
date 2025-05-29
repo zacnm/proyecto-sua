@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.OSGiUtils;
-import sua.autonomouscar.infrastructure.Thing;
+import sua.autonomouscar.infraestructure.OSGiUtils;
+import sua.autonomouscar.infraestructure.Thing;
 import sua.autonomouscar.simulation.interfaces.ISimulationElement;
 
 public class Simulator extends Thing implements ISimulator {

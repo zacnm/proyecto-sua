@@ -1,0 +1,41 @@
+package sua.autonomouscar.mapeklite.adaptation.resources.monitors;
+
+import org.osgi.framework.BundleContext;
+
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Monitor;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IMonitor;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
+import sua.autonomouscar.interfaces.ERoadType;
+
+public class MonitorTipoVia extends Monitor {
+	
+	public static String ID = "Monitor Tipo Via";
+
+	public MonitorTipoVia(BundleContext context) {
+		super(context, ID);
+	}
+
+	@Override
+	public IMonitor report(Object measure) {
+		
+		this.logger.debug(String.format("Received measure: %s", measure.toString()));
+		
+		try {
+			ERoadType roadType = (ERoadType) measure;
+			
+			IKnowledgeProperty kp = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("tipo-via");
+			
+			if ( kp.getValue() == null || kp.getValue() != roadType ) { // sólo actualizamos si el valor es diferente
+				this.logger.debug(String.format("Updating Knowledge Property %s TO %s", kp.getId(), roadType));
+				kp.setValue(roadType);
+			}
+			
+		} catch (Exception e) {
+			return this;
+		}
+		
+		return this;
+	}
+
+}

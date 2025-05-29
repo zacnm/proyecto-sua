@@ -29,12 +29,13 @@ public class Activator implements BundleActivator {
 				//
 				
 					//  configure : realiza una configuración inicial de servicios y 
-					//    dispositivos (de prueba)
-					//
-					//   Modo uso
-					//		configure
-					//
-					"configure", 					
+					//    dispositivos (usa la sonda Initial-System-Configuration)
+					//	  para provocar una configuración inicial
+					"initialize",
+					"configure",
+					
+					//  know : muestra las propiedades del knowledge
+					"knowledge",
 					
 					//   show : muestra la configuración actual de conducción
 					//

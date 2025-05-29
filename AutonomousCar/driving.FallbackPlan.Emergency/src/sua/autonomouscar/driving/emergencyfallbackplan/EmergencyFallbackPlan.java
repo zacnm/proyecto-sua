@@ -2,11 +2,12 @@ package sua.autonomouscar.driving.emergencyfallbackplan;
 
 import org.osgi.framework.BundleContext;
 
+import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
 import sua.autonomouscar.devices.interfaces.ISpeedometer;
 import sua.autonomouscar.driving.interfaces.IDrivingService;
 import sua.autonomouscar.driving.interfaces.IEmergencyFallbackPlan;
-import sua.autonomouscar.infrastructure.OSGiUtils;
-import sua.autonomouscar.infrastructure.driving.FallbackPlan;
+import sua.autonomouscar.infraestructure.OSGiUtils;
+import sua.autonomouscar.infraestructure.driving.FallbackPlan;
 
 public class EmergencyFallbackPlan extends FallbackPlan implements IEmergencyFallbackPlan {
 
@@ -18,6 +19,7 @@ public class EmergencyFallbackPlan extends FallbackPlan implements IEmergencyFal
 
 	public EmergencyFallbackPlan(BundleContext context, String id) {
 		super(context, id);
+		logger = SmartLogger.getLogger(IEmergencyFallbackPlan.class.getName());
 		this.addImplementedInterface(IEmergencyFallbackPlan.class.getName());
 	}
 	
@@ -49,7 +51,7 @@ public class EmergencyFallbackPlan extends FallbackPlan implements IEmergencyFal
 			else if ( Math.abs(diffSpeed) > 1 ) { rpmCorrection = MY_SMOOTH_ACCELERATION_RPM; rpmAppliedCorrection = "smooth"; }
 			
 			this.getEngine().decelerate(rpmCorrection);
-			this.debugMessage(String.format("Decelerating (%s) ...", rpmAppliedCorrection));
+			logger.info(String.format("Decelerating (%s) ...", rpmAppliedCorrection));
 		}
 		else
 			this.stopDriving();
@@ -63,10 +65,16 @@ public class EmergencyFallbackPlan extends FallbackPlan implements IEmergencyFal
 	@Override
 	public IDrivingService stopTheDrivingFunction() {
 
-		this.debugMessage("Stopped with the Emergency Lights engaged");
+		logger.info("Stopped with the Emergency Lights engaged");
 		return this;
 	}
 
+	
+	
+	@Override
+	protected boolean checkRequirementsToPerfomTheDrivingService() {
+		return super.checkRequirementsToPerfomTheDrivingService();
+	}	
 	
 
 

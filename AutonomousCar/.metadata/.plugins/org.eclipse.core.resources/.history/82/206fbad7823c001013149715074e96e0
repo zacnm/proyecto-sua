@@ -1,0 +1,55 @@
+package autonomouscar.mapeklite.adaptation.resources.monitors;
+
+import org.osgi.framework.BundleContext;
+
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Monitor;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IMonitor;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
+
+import sua.autonomouscar.interfaces.ERoadStatus;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
+
+public class MonitorEstadoVia extends Monitor {
+	
+	public static String ID = "Monitor Estado Via";
+
+	public MonitorEstadoVia(BundleContext context) {
+		super(context, ID);
+	}
+
+	@Override
+	public IMonitor report(Object measure) {
+		
+		this.logger.debug(String.format("Received measure: %s", measure.toString()));
+		
+		try {
+			ERoadStatus roadStatus = (ERoadStatus) measure;
+			
+			IKnowledgeProperty kp_EstadoVia = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("estado-via");
+			IKnowledgeProperty kp_FuncionConduccion = BasicMAPEKLiteLoopHelper.getKnowledgeProperty("funcion-conduccion");
+
+			ERoadStatus estadoVia = (ERoadStatus) kp_EstadoVia.getValue();
+			EFuncionConduccion funcionConduccion = (EFuncionConduccion) kp_FuncionConduccion.getValue();
+			
+			if (estadoVia != roadStatus) {
+				
+				if (roadStatus != ERoadStatus.FLUID && funcionConduccion == EFuncionConduccion.L3_HighwayChauffer) {
+					kp_FuncionConduccion.setValue(EFuncionConduccion.L3_TrafficJamChauffer);
+				}
+				
+				if (roadStatus == ERoadStatus.FLUID && funcionConduccion == EFuncionConduccion.L3_TrafficJamChauffer) {
+					kp_FuncionConduccion.setValue(EFuncionConduccion.L3_TrafficJamChauffer);
+				}
+				
+				kp_EstadoVia.setValue(roadStatus);
+			}
+			
+		} catch (Exception e) {
+			return this;
+		}
+		
+		return this;
+	}
+
+}

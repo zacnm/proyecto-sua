@@ -3,12 +3,12 @@ package sua.autonomouscar.interaction.steeringwheel;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.interaction.HapticVibration;
+import sua.autonomouscar.infraestructure.interaction.ARC.HapticVibrationARC;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected HapticVibration im_hapticvibration = null;
+	protected HapticVibrationARC im_hapticvibrationARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -19,15 +19,14 @@ public class Activator implements BundleActivator {
 
 		String deviceId = "SteeringWheel";
 		
-		this.im_hapticvibration = new HapticVibration(bundleContext, deviceId);
-		this.im_hapticvibration.registerThing();
+		this.im_hapticvibrationARC = new HapticVibrationARC(bundleContext, deviceId);
+		this.im_hapticvibrationARC.start();
 
 }
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.im_hapticvibration != null )
-			this.im_hapticvibration.unregisterThing();
-
+		this.im_hapticvibrationARC.stop();
+		this.im_hapticvibrationARC = null;
 		Activator.context = null;
 	}
 

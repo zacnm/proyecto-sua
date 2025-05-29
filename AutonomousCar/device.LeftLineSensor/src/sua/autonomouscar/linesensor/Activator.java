@@ -3,13 +3,13 @@ package sua.autonomouscar.linesensor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.devices.LineSensor;
+import sua.autonomouscar.infraestructure.devices.ARC.LineSensorARC;
 
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected LineSensor sensor = null;
+	protected LineSensorARC sensorARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -17,16 +17,13 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.sensor = new LineSensor(bundleContext, "LeftLineSensor");
-		this.sensor.registerThing();
+		this.sensorARC = new LineSensorARC(bundleContext, "LeftLineSensor");
+		this.sensorARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.sensor != null ) {
-			this.sensor.unregisterThing();
-			this.sensor = null;
-		}
-		
+		this.sensorARC.stop();
+		this.sensorARC = null;
 		Activator.context = null;
 	}
 

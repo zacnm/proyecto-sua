@@ -6,7 +6,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected L2_AdaptiveCruiseControl drivingFunction = null;
+	protected L2_AdaptiveCruiseControlARC drivingFunctionARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -14,14 +14,13 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.drivingFunction = new L2_AdaptiveCruiseControl(bundleContext, "L2_AdaptiveCruiseControl");
-		this.drivingFunction.registerThing();
+		this.drivingFunctionARC = new L2_AdaptiveCruiseControlARC(bundleContext, "L2_AdaptiveCruiseControl");
+		this.drivingFunctionARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.drivingFunction != null )
-			this.drivingFunction.unregisterThing();
-		
+		this.drivingFunctionARC.stop();
+		this.drivingFunctionARC = null;
 		Activator.context = null;
 	}
 

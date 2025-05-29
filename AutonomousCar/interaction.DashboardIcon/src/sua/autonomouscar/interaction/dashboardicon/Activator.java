@@ -3,12 +3,12 @@ package sua.autonomouscar.interaction.dashboardicon;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.interaction.VisualIcon;
+import sua.autonomouscar.infraestructure.interaction.ARC.VisualIconARC;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected VisualIcon im_visualicon = null;
+	protected VisualIconARC im_visualiconARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -17,18 +17,16 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		String deviceId = "DashboardIcon";
+		String deviceId = "Dashboard.Icon";
 		
-		this.im_visualicon = new VisualIcon(bundleContext, deviceId);
-		this.im_visualicon.registerThing();
+		this.im_visualiconARC = new VisualIconARC(bundleContext, deviceId);
+		this.im_visualiconARC.start();
 
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-
-		if ( this.im_visualicon != null )
-			this.im_visualicon.unregisterThing();
-
+		this.im_visualiconARC.stop();
+		this.im_visualiconARC = null;
 		Activator.context = null;
 	}
 

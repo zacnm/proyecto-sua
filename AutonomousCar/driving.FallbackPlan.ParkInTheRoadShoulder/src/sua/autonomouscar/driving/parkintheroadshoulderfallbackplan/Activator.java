@@ -7,7 +7,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected ParkInTheRoadShoulderFallbackPlan drivingFunction = null;
+	protected ParkInTheRoadShoulderFallbackPlanARC drivingFunctionARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -15,14 +15,13 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.drivingFunction = new ParkInTheRoadShoulderFallbackPlan(bundleContext, "ParkInTheRoadShoulderFallbackPlan");
-		this.drivingFunction.registerThing();
+		this.drivingFunctionARC = new ParkInTheRoadShoulderFallbackPlanARC(bundleContext, "ParkInTheRoadShoulderFallbackPlan");
+		this.drivingFunctionARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.drivingFunction != null )
-			this.drivingFunction.unregisterThing();
-		
+		this.drivingFunctionARC.stop();
+		this.drivingFunctionARC = null;
 		Activator.context = null;
 	}
 

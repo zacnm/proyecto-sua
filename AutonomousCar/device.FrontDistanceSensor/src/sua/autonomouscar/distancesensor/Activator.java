@@ -3,12 +3,12 @@ package sua.autonomouscar.distancesensor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.devices.DistanceSensor;
+import sua.autonomouscar.infraestructure.devices.ARC.DistanceSensorARC;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected DistanceSensor sensor = null;
+	protected DistanceSensorARC sensorARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -16,15 +16,14 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.sensor = new DistanceSensor(bundleContext, "FrontDistanceSensor");
-		this.sensor.registerThing();
+		String bundleId = bundleContext.getBundle().getSymbolicName();
+		this.sensorARC = new DistanceSensorARC(bundleContext, bundleId, "FrontDistanceSensor");
+		this.sensorARC.start();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.sensor != null )
-			this.sensor.unregisterThing();
-		this.sensor = null;
-		
+		this.sensorARC.stop();
+		this.sensorARC = null;
 		Activator.context = null;
 	}
 

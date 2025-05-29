@@ -3,16 +3,16 @@ package sua.autonomouscar.distancesensor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import sua.autonomouscar.infrastructure.devices.DistanceSensor;
+import sua.autonomouscar.infraestructure.devices.ARC.DistanceSensorARC;
 
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected DistanceSensor frontDistance_sensor = null;
-	protected DistanceSensor rearDistance_sensor = null;
-	protected DistanceSensor leftDistance_sensor = null;
-	protected DistanceSensor rightDistance_sensor = null;
+	protected DistanceSensorARC frontDistance_sensorARC = null;
+	protected DistanceSensorARC rearDistance_sensorARC = null;
+	protected DistanceSensorARC leftDistance_sensorARC = null;
+	protected DistanceSensorARC rightDistance_sensorARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -21,29 +21,27 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		this.frontDistance_sensor = new DistanceSensor(bundleContext, "LIDAR-FrontDistanceSensor");
-		this.frontDistance_sensor.registerThing();
+		String bundleId = bundleContext.getBundle().getSymbolicName();
+		
+		this.frontDistance_sensorARC = new DistanceSensorARC(bundleContext, bundleId + ".FrontDistanceSensor", "LIDAR-FrontDistanceSensor");
+		this.frontDistance_sensorARC.start();
 
-		this.rearDistance_sensor = new DistanceSensor(bundleContext, "LIDAR-RearDistanceSensor");
-		this.rearDistance_sensor.registerThing();
+		this.rearDistance_sensorARC = new DistanceSensorARC(bundleContext, bundleId + ".RearDistanceSensor", "LIDAR-RearDistanceSensor");
+		this.rearDistance_sensorARC.start();
 
-		this.leftDistance_sensor = new DistanceSensor(bundleContext, "LIDAR-LeftDistanceSensor");
-		this.leftDistance_sensor.registerThing();
+		this.leftDistance_sensorARC = new DistanceSensorARC(bundleContext, bundleId + ".LeftDistanceSensor", "LIDAR-LeftDistanceSensor");
+		this.leftDistance_sensorARC.start();
 
-		this.rightDistance_sensor = new DistanceSensor(bundleContext, "LIDAR-RightDistanceSensor");
-		this.rightDistance_sensor.registerThing();
+		this.rightDistance_sensorARC = new DistanceSensorARC(bundleContext, bundleId + ".RightDistanceSensor", "LIDAR-RightDistanceSensor");
+		this.rightDistance_sensorARC.start();
 }
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.frontDistance_sensor != null )
-			this.frontDistance_sensor.unregisterThing();
-		if ( this.rearDistance_sensor != null )
-			this.rearDistance_sensor.unregisterThing();
-		if ( this.leftDistance_sensor != null )
-			this.leftDistance_sensor.unregisterThing();
-		if ( this.rightDistance_sensor != null )
-			this.rightDistance_sensor.unregisterThing();
-		
+
+		this.frontDistance_sensorARC.stop();	this.frontDistance_sensorARC = null;
+		this.rearDistance_sensorARC.stop();		this.rearDistance_sensorARC = null;
+		this.leftDistance_sensorARC.stop();		this.leftDistance_sensorARC = null;
+		this.rightDistance_sensorARC.stop();	this.rightDistance_sensorARC = null;
 		Activator.context = null;
 	}
 

@@ -2,12 +2,13 @@ package sua.autonomouscar.roadsensor;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import sua.autonomouscar.infrastructure.devices.RoadSensor;
+
+import sua.autonomouscar.infraestructure.devices.ARC.RoadSensorARC;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	protected RoadSensor roadSensor = null;
+	protected RoadSensorARC roadSensorARC = null;
 
 	static BundleContext getContext() {
 		return context;
@@ -15,14 +16,16 @@ public class Activator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		this.roadSensor = new RoadSensor(bundleContext, "RoadSensor");
-		this.roadSensor.registerThing();
+		this.roadSensorARC = new RoadSensorARC(bundleContext, "RoadSensor");
+		this.roadSensorARC.start();
+		
+		// Activamos este servicio por defecto (para facilitar la simulación)
+		this.roadSensorARC.deploy();
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		if ( this.roadSensor != null )
-			this.roadSensor.unregisterThing();
-		
+		this.roadSensorARC.stop();
+		this.roadSensorARC = null;
 		Activator.context = null;
 	}
 

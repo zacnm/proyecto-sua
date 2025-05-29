@@ -1,0 +1,33 @@
+1748455118195	Rename type 'SondaModo'
+1748455628192	Rename type 'MonitorModo'
+1748456051776	Rename local variable 'value'
+1748456609872	Copy compilation unit
+1748456697010	Copy compilation unit
+1748456857516	Rename package 'autonomouscar.mapeklite.adaptation.rules'
+1748456880930	Rename package 'autonomouscar.mapeklite.adaptation.probes'
+1748456889501	Rename package 'autonomouscar.mapeklite.adaptation.monitors'
+1748456896797	Move compilation units
+1748456902513	Move compilation units
+1748456997793	Delete element
+1748457010380	Copy compilation unit
+1748457016105	Delete element
+1748457223094	Copy compilation unit
+1748457514004	Rename method 'reportRoadType'
+1748516511112	Move compilation unit
+1748516515161	Delete element
+1748516857920	Rename type 'IluminacionConfortAdaptationRule'
+1748517744359	Rename local variable 'kp'
+1748519279035	Rename package 'autonomouscar.mapek.lite.adaptation.starter'
+1748519291778	Rename package 'autonomouscar.mapeklite.adaptation.resources.rules'
+1748519305862	Rename package 'autonomouscar.mapeklite.adaptation.resources.enums'
+1748519311126	Rename package 'autonomouscar.mapeklite.adaptation.resources.monitors'
+1748519316128	Rename package 'autonomouscar.mapeklite.adaptation.resources.probes'
+1748521826098	Copy compilation unit
+1748521935740	Copy compilation unit
+1748522070102	Copy compilation unit
+1748522139071	Copy compilation unit
+1748522211419	Copy compilation unit
+1748522995048	Rename local variable 'nivelAutonomiaKp'
+1748523003197	Rename local variable 'funcionConduccionKp'
+1748523010161	Rename local variable 'estadoViaKp'
+1748523018183	Rename local variable 'tipoViaKp'

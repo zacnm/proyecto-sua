@@ -1,14 +1,23 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Engine
+Bundle-Name: device.Engine
 Bundle-SymbolicName: device.Engine
 Bundle-Version: 1.0.0
 Bundle-Activator: sua.autonomouscar.engine.Activator
-Bundle-Vendor: JoanFons@SUA.2020
-Import-Package: org.osgi.framework,
+Bundle-Vendor: JoanFons@SUA.2024
+Import-Package: es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.impl,
+ es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.interfaces,
+ es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components,
+ es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces,
+ es.upv.pros.tatami.adaptation.mapek.lite.impl,
+ es.upv.pros.tatami.adaptation.mapek.lite.interfaces,
+ es.upv.pros.tatami.osgi.utils.components,
+ es.upv.pros.tatami.osgi.utils.interfaces,
+ org.osgi.framework,
  sua.autonomouscar.devices.interfaces,
- sua.autonomouscar.infrastructure,
- sua.autonomouscar.infrastructure.devices,
+ sua.autonomouscar.infraestructure,
+ sua.autonomouscar.infraestructure.devices,
+ sua.autonomouscar.infraestructure.devices.ARC,
  sua.autonomouscar.interfaces
 Export-Package: sua.autonomouscar.engine
 Automatic-Module-Name: device.Engine

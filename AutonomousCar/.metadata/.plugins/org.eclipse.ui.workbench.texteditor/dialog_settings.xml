@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="true"/>
+		<item key="selection" value="if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional &amp;&amp; roadType == ERoadType.STD_ROAD) {"/>
+		<list key="replacehistory">
+			<item value="TrafficJam"/>
+			<item value="Highway"/>
+			<item value="City"/>
+			<item value="Status"/>
+		</list>
+		<list key="findhistory">
+			<item value="if (nivelAutonomia == ENivelAutonomia.L3_AutomatizacionCondicional &amp;&amp; roadType == ERoadType.STD_ROAD) {"/>
+			<item value="Highway"/>
+			<item value="City"/>
+			<item value="TrafficJam"/>
+			<item value="Type"/>
+		</list>
+	</section>
+</section>

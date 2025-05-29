@@ -1,11 +1,14 @@
 package sua.autonomouscar.driving.interfaces;
 
+import sua.autonomouscar.devices.interfaces.IHumanSensors;
+import sua.autonomouscar.devices.interfaces.IRoadSensor;
+
 public interface IL3_DrivingService extends IL2_DrivingService {
 	
-	public void setHumanSensors(String humanSensors);
-	public void setRoadSensor(String roadSensors);
+	public void setHumanSensors(IHumanSensors humanSensors);
+	public void setRoadSensor(IRoadSensor roadSensors);
 	
-	public void setFallbackPlan(String plan);
+	public void setFallbackPlan(IFallbackPlan plan);
 
 	public void setReferenceSpeed(int speed);
 	public int getReferenceSpeed();

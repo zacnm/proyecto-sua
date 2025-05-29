@@ -1,0 +1,19 @@
+package autonomouscar.mapek.lite.adaptation.resources;
+
+import org.osgi.framework.BundleContext;
+import sua.autonomouscar.interfaces.ERoadType;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Probe;
+
+public class SondaEstadoVia extends Probe {
+	
+	public static String ID = "Sonda Tipo Via";
+
+	public SondaEstadoVia(BundleContext context) {
+		super(context, ID);
+	}
+	
+	public void reportRoadType(ERoadType roadType) {
+		this.reportMeasure(roadType);
+	}
+
+}
