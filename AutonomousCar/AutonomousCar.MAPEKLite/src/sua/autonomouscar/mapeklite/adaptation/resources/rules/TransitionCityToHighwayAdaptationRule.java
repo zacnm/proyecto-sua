@@ -23,7 +23,7 @@ import sua.autonomouscar.infraestructure.devices.ARC.SteeringARC;
 import sua.autonomouscar.infraestructure.driving.ARC.L3_DrivingServiceARC;
 import sua.autonomouscar.infraestructure.interaction.ARC.NotificationServiceARC;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
-import sua.autonomouscar.mapeklite.adaptation.resources.knowlege.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
 
 public class TransitionCityToHighwayAdaptationRule extends AdaptationRule {
 	

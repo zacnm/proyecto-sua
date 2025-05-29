@@ -30,7 +30,6 @@ public abstract class L3_DrivingServiceARC extends L2_DrivingServiceARC {
 	@Override
 	public IAdaptiveReadyComponent bindService(String req, Object value) {
 		if (req.equals(REQUIRED_HUMANSENSORS)) {
-			System.out.println("L3_DrivingServiceARC biding human sensors");
 			this.getTheL3_DrivingService().setHumanSensors((IHumanSensors) value);
 		}
 		else if ( req.equals(REQUIRED_ROADSENSOR) )

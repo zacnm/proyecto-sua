@@ -3,6 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: AutonomousCar.MAPEKLite
 Bundle-SymbolicName: AutonomousCar.MAPEKLite
 Bundle-Version: 1.0.0
+Export-Package: sua.autonomouscar.mapeklite.adaptation.resources.enums,
+ sua.autonomouscar.mapeklite.adaptation.resources.knowledge,
+ sua.autonomouscar.mapeklite.adaptation.resources.probes
 Bundle-Activator: sua.autonomouscar.mapek.lite.adaptation.starter.Activator
 Bundle-Vendor: jjfons@pros.upv.es
 Automatic-Module-Name: TLC.MAPEK.lite.Starter
@@ -46,8 +49,7 @@ Import-Package: es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.impl,
  sua.autonomouscar.infraestructure.devices.ARC,
  sua.autonomouscar.infraestructure.driving.ARC,
  sua.autonomouscar.infraestructure.interaction.ARC,
- sua.autonomouscar.interfaces
-Export-Package: autonomouscar.mapek.lite.adaptation.resources,
+ sua.autonomouscar.interfaces,
  sua.autonomouscar.mapeklite.adaptation.resources.enums,
- sua.autonomouscar.mapeklite.adaptation.resources.knowlege,
+ sua.autonomouscar.mapeklite.adaptation.resources.knowledge,
  sua.autonomouscar.mapeklite.adaptation.resources.probes

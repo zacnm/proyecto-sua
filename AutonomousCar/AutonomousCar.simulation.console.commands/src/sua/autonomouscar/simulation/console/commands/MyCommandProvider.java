@@ -1,7 +1,5 @@
 package sua.autonomouscar.simulation.console.commands;
 
-import java.lang.reflect.Field;
-
 import org.osgi.framework.BundleContext;
 
 import es.upv.pros.tatami.adaptation.mapek.lite.ARC.artifacts.interfaces.IAdaptiveReadyComponent;
@@ -26,14 +24,16 @@ import sua.autonomouscar.driving.interfaces.IL3_DrivingService;
 import sua.autonomouscar.infraestructure.OSGiUtils;
 import sua.autonomouscar.infraestructure.devices.DistanceSensor;
 import sua.autonomouscar.infraestructure.driving.DrivingService;
+import sua.autonomouscar.infraestructure.interaction.NotificationService;
+import sua.autonomouscar.interaction.interfaces.INotificationService;
 import sua.autonomouscar.interfaces.EFaceStatus;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
 import sua.autonomouscar.interfaces.IIdentifiable;
-import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
-import sua.autonomouscar.mapeklite.adaptation.resources.knowlege.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaAsientoConductor;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaEstadoVia;
-import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaNivelAutonomia;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaManosEnVolante;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaTipoVia;
 import sua.autonomouscar.simulation.IManualSimulatorStepsManager;
 
@@ -227,10 +227,14 @@ public class MyCommandProvider {
 				sensor.setFaceStatus(EFaceStatus.SLEEPING);
 			
 		} else if ( property.equalsIgnoreCase("hands") ) {
+			SondaManosEnVolante sondaHandsOnWheel = getProbe(SondaManosEnVolante.ID);
+			
 			if ( s.equalsIgnoreCase("on-wheel") ) {
 				sensor.setTheHandsOnTheSteeringWheel(true);
+				sondaHandsOnWheel.reportManosEnVolante(true);
 			} else if ( s.equalsIgnoreCase("off-wheel") ) {
 				sensor.setTheHandsOnTheSteeringWheel(false);
+				sondaHandsOnWheel.reportManosEnVolante(false);
 			}
 		}
 	}
@@ -282,43 +286,24 @@ public class MyCommandProvider {
 		IHumanSensors sensor = OSGiUtils.getService(context, IHumanSensors.class);
 		if ( sensor == null )
 			return;
-		if ( s.equalsIgnoreCase("driver") )
+		if ( s.equalsIgnoreCase("driver") ) {
+			SondaAsientoConductor sonda = getProbe(SondaAsientoConductor.ID);
 			sensor.setDriverSeatOccupancy(value);
+			sonda.reportAsientoConductorOcupado(value);
+		}
 		else if ( s.equalsIgnoreCase("copilot") )
 			sensor.setCopilotSeatOccupancy(value);
 	}
 	
+	public void notification() {
+		NotificationService notificationService = (NotificationService)OSGiUtils.getService(context, INotificationService.class);
+		notificationService.notify("Test message");
+	}
+	
 	public void driving(String function) {
 		
-		ENivelAutonomia nivelAutonomia = null;
-		
-		switch (function.toUpperCase()) {
-			case "L0":
-				nivelAutonomia = ENivelAutonomia.L0_ConduccionManual;
-				break;
-			case "L1":
-				nivelAutonomia = ENivelAutonomia.L1_ConduccionAsistida;
-				break;
-			case "L2":
-				nivelAutonomia = ENivelAutonomia.L2_AutomatizacionParcial;
-				break;
-			case "L3":
-				nivelAutonomia = ENivelAutonomia.L3_AutomatizacionCondicional;
-				break;
-			default:
-				logger.error("Unknown driving function: " + function);
-				return;
-		}
-		
-		if (nivelAutonomia != null) {
-			SondaNivelAutonomia sondaNivelAutonomia = getProbe(SondaNivelAutonomia.ID);
-			sondaNivelAutonomia.reportNivelAutonomia(nivelAutonomia);
-			return;
-		}
-		
+		System.out.println("Function disabled in this Adaptive version!");
 		return;
-		
-		
 	}
 
 	public void engine(String s, int rpm) {

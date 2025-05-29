@@ -9,7 +9,7 @@ import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper
 
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
-import sua.autonomouscar.mapeklite.adaptation.resources.knowlege.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
 
 public class MonitorEstadoVia extends Monitor {
 	

@@ -1,0 +1,97 @@
+package sua.autonomouscar.mapeklite.adaptation.resources.rules;
+
+import org.osgi.framework.BundleContext;
+
+import es.upv.pros.tatami.adaptation.mapek.lite.ARC.structures.systemconfiguration.interfaces.IRuleComponentsSystemConfiguration;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.AdaptationRule;
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.interfaces.IKnowledgeProperty;
+import es.upv.pros.tatami.adaptation.mapek.lite.exceptions.analyzing.RuleException;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.BasicMAPEKLiteLoopHelper;
+import es.upv.pros.tatami.adaptation.mapek.lite.helpers.SystemConfigurationHelper;
+import es.upv.pros.tatami.adaptation.mapek.lite.structures.systemconfiguration.interfaces.IRuleSystemConfiguration;
+import es.upv.pros.tatami.osgi.utils.interfaces.ITimeStamped;
+import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
+
+import sua.autonomouscar.driving.l3.highwaychauffer.L3_HighwayChaufferARC;
+import sua.autonomouscar.driving.parkintheroadshoulderfallbackplan.ParkInTheRoadShoulderFallbackPlanARC;
+import sua.autonomouscar.infraestructure.devices.ARC.DistanceSensorARC;
+import sua.autonomouscar.infraestructure.devices.ARC.EngineARC;
+import sua.autonomouscar.infraestructure.devices.ARC.HumanSensorsARC;
+import sua.autonomouscar.infraestructure.devices.ARC.LineSensorARC;
+import sua.autonomouscar.infraestructure.devices.ARC.RoadSensorARC;
+import sua.autonomouscar.infraestructure.devices.ARC.SteeringARC;
+import sua.autonomouscar.infraestructure.driving.ARC.L3_DrivingServiceARC;
+import sua.autonomouscar.infraestructure.interaction.ARC.HapticVibrationARC;
+import sua.autonomouscar.infraestructure.interaction.ARC.NotificationServiceARC;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
+
+public class DriverInteractionAdaptationRule extends AdaptationRule {
+	
+	protected static SmartLogger logger = SmartLogger.getLogger(SteeringHapticVibrationAdaptationRule.class);
+	public static String ID = "Regla Interacción Conductor";
+	
+	IKnowledgeProperty kp_FuncionConduccionActual = null;
+	IKnowledgeProperty kp_ManosEnVolante = null;
+	IKnowledgeProperty kp_AsientoConductor = null;
+
+	public DriverInteractionAdaptationRule(BundleContext context) {
+		super(context, ID);
+		this.setListenToKnowledgePropertyChanges(KnowledgeId.FUNCION_CONDUCCION_ACTUAL);
+		this.setListenToKnowledgePropertyChanges(KnowledgeId.MANOS_EN_VOLANTE);
+		this.setListenToKnowledgePropertyChanges(KnowledgeId.ASIENTO_CONDUCTOR_OCUPADO);
+
+		kp_FuncionConduccionActual = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.FUNCION_CONDUCCION_ACTUAL);
+		kp_ManosEnVolante = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.MANOS_EN_VOLANTE);
+		kp_AsientoConductor = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ASIENTO_CONDUCTOR_OCUPADO);
+	}
+
+	@Override
+	public boolean checkAffectedByChange(IKnowledgeProperty property) {
+		
+		if (kp_FuncionConduccionActual == null || kp_ManosEnVolante == null ||kp_ManosEnVolante == null ||
+				kp_AsientoConductor.getValue() == null || kp_ManosEnVolante.getValue() == null || kp_AsientoConductor.getValue() == null) {
+			return false;
+		}
+		
+		EFuncionConduccion funcionConduccionActual = (EFuncionConduccion) kp_FuncionConduccionActual.getValue();
+		
+		return funcionConduccionActual == EFuncionConduccion.L3_CityChauffer ||
+				funcionConduccionActual == EFuncionConduccion.L3_HighwayChauffer ||
+						funcionConduccionActual == EFuncionConduccion.L3_TrafficJamChauffer;
+	}
+	
+	@Override
+	public IRuleSystemConfiguration onExecute(IKnowledgeProperty property) throws RuleException {
+		
+		IRuleComponentsSystemConfiguration nextSystemConfiguration = SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
+	
+		boolean manosEnVolante = (boolean) kp_ManosEnVolante.getValue();
+		
+		nextSystemConfiguration = manosEnVolante ? 
+				activarVibracionVolante(nextSystemConfiguration) : 
+				desactivarVibracionVolante(nextSystemConfiguration);
+		
+		return nextSystemConfiguration;
+	}
+	
+	private IRuleComponentsSystemConfiguration activarVibracionVolante(IRuleComponentsSystemConfiguration configuration) {
+
+		SystemConfigurationHelper.componentToAdd(configuration, "interaction.SteeringWheel", "1.0.0");
+		
+		SystemConfigurationHelper.bindingToAdd(configuration, 
+				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
+				"interaction.SteeringWheel", "1.0.0", HapticVibrationARC.PROVIDED_MECHANISM);
+
+		return configuration;
+	}
+	
+	private IRuleComponentsSystemConfiguration desactivarVibracionVolante(IRuleComponentsSystemConfiguration configuration) {
+
+		SystemConfigurationHelper.componentToRemove(configuration, "interaction.SteeringWheel", "1.0.0");
+
+		return configuration;
+	}
+
+	
+}

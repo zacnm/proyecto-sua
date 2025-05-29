@@ -4,15 +4,11 @@
 	<section name="">
 		<item key="org.eclipse.jdt.search.resultpage.limit" value="1000"/>
 		<item key="org.eclipse.jdt.search.resultpage.limit_enabled" value="TRUE"/>
+		<item key="org.eclipse.search.resultpage.limit" value="1000"/>
 	</section>
 	<section name="org.eclipse.jdt.ui.JavaSearchResultPage">
 		<item key="org.eclipse.jdt.search.resultpage.limit" value="1000"/>
 		<item key="org.eclipse.jdt.search.resultpage.limit_enabled" value="TRUE"/>
-	</section>
-	<section name="">
-		<item key="org.eclipse.jdt.search.resultpage.limit" value="1000"/>
-		<item key="org.eclipse.jdt.search.resultpage.limit_enabled" value="TRUE"/>
-		<item key="org.eclipse.search.resultpage.limit" value="1000"/>
 	</section>
 	<section name="SearchDialog">
 		<item key="PREVIOUS_PAGE" value="org.eclipse.search.internal.ui.text.TextSearchPage"/>
@@ -49,7 +45,7 @@
 		<item key="WHOLE_WORD" value="false"/>
 		<item key="SEARCH_DERIVED" value="false"/>
 		<item key="SEARCH_IN_BINARIES" value="false"/>
-		<item key="HISTORY_SIZE" value="3"/>
+		<item key="HISTORY_SIZE" value="4"/>
 		<section name="EXTENSIONS">
 			<item key="0" value="*.java"/>
 		</section>
@@ -57,7 +53,7 @@
 			<item key="ignoreCase" value="true"/>
 			<item key="isRegExSearch" value="false"/>
 			<item key="isWholeWord" value="false"/>
-			<item key="textPattern" value="tipo-via"/>
+			<item key="textPattern" value="biding"/>
 			<item key="scope" value="0"/>
 			<list key="fileNamePatterns">
 				<item value="*.java"/>
@@ -69,7 +65,7 @@
 			<item key="ignoreCase" value="true"/>
 			<item key="isRegExSearch" value="false"/>
 			<item key="isWholeWord" value="false"/>
-			<item key="textPattern" value="estado-via"/>
+			<item key="textPattern" value="tipo-via"/>
 			<item key="scope" value="0"/>
 			<list key="fileNamePatterns">
 				<item value="*.java"/>
@@ -78,6 +74,18 @@
 			</list>
 		</section>
 		<section name="HISTORY2">
+			<item key="ignoreCase" value="true"/>
+			<item key="isRegExSearch" value="false"/>
+			<item key="isWholeWord" value="false"/>
+			<item key="textPattern" value="estado-via"/>
+			<item key="scope" value="0"/>
+			<list key="fileNamePatterns">
+				<item value="*.java"/>
+			</list>
+			<list key="workingSets">
+			</list>
+		</section>
+		<section name="HISTORY3">
 			<item key="ignoreCase" value="true"/>
 			<item key="isRegExSearch" value="false"/>
 			<item key="isWholeWord" value="false"/>
@@ -91,6 +99,9 @@
 		</section>
 	</section>
 	<section name="org.eclipse.search.text.FileSearchResultPage">
+		<item key="org.eclipse.search.resultpage.limit" value="1000"/>
+	</section>
+	<section name="">
 		<item key="org.eclipse.search.resultpage.limit" value="1000"/>
 	</section>
 </section>

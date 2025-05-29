@@ -1,0 +1,18 @@
+package sua.autonomouscar.mapeklite.adaptation.resources.probes;
+
+import org.osgi.framework.BundleContext;
+
+import es.upv.pros.tatami.adaptation.mapek.lite.artifacts.components.Probe;
+
+public class SondaDriverSeat extends Probe {
+	
+	public static String ID = "Sonda Driver Seat";
+
+	public SondaDriverSeat(BundleContext context) {
+		super(context, ID);
+	}
+
+	public void reportSeatSensor(boolean driverSeatOccupied) {
+		this.reportMeasure(driverSeatOccupied);
+	}
+}

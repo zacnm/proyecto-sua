@@ -19,6 +19,8 @@ public class Activator implements BundleActivator {
 
 		String deviceId = "SteeringWheel";
 		
+		System.out.println("Starting SteeringWheel");
+		
 		this.im_hapticvibrationARC = new HapticVibrationARC(bundleContext, deviceId);
 		this.im_hapticvibrationARC.start();
 

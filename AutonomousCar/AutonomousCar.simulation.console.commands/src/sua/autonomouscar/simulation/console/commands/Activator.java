@@ -147,7 +147,8 @@ public class Activator implements BundleActivator {
 					//
 					"steering", 			// controlar manualmente las funciones primarias de conducción
 					
-					
+					// notification : envía una notificación al conductor
+					"notification",
 					
 				//	
 				// FUNCIONES DE CONDUCCIÓN
@@ -166,6 +167,7 @@ public class Activator implements BundleActivator {
 					//
 					//
 					"driving",
+					
 					
 				//
 				// SIMULADOR

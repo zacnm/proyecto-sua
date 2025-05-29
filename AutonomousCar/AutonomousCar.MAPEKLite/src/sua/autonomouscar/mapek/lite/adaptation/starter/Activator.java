@@ -21,16 +21,22 @@ import sua.autonomouscar.infraestructure.devices.ARC.RoadSensorARC;
 import sua.autonomouscar.infraestructure.devices.ARC.SteeringARC;
 import sua.autonomouscar.infraestructure.driving.ARC.L3_DrivingServiceARC;
 import sua.autonomouscar.infraestructure.interaction.ARC.AuditorySoundARC;
+import sua.autonomouscar.infraestructure.interaction.ARC.HapticVibrationARC;
 import sua.autonomouscar.infraestructure.interaction.ARC.NotificationServiceARC;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
-import sua.autonomouscar.mapeklite.adaptation.resources.enums.ENivelAutonomia;
-import sua.autonomouscar.mapeklite.adaptation.resources.knowlege.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
+import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorAsientoConductor;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorEstadoVia;
+import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorManosEnVolante;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorTipoVia;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaAsientoConductor;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaEstadoVia;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaManosEnVolante;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaTipoVia;
+import sua.autonomouscar.mapeklite.adaptation.resources.rules.DriverSeatHapticVibrationAdaptationRule;
+import sua.autonomouscar.mapeklite.adaptation.resources.rules.SteeringWheelHapticVibrationAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TransitionCityToHighwayAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TransitionCityToTrafficJamAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TransitionHighwayToCityAdaptationRule;
@@ -73,13 +79,23 @@ public class Activator implements BundleActivator {
 		IKnowledgeProperty kp_estadoVia = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.ESTADO_VIA);
 		kp_estadoVia.setValue(ERoadStatus.FLUID);
 
-		IKnowledgeProperty kp_nivelAutonomia = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.NIVEL_AUTONOMIA);
-		kp_nivelAutonomia.setValue(ENivelAutonomia.L3_AutomatizacionCondicional);
-
 		IKnowledgeProperty kp_funcionConduccionActual = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.FUNCION_CONDUCCION_ACTUAL);
 		kp_funcionConduccionActual.setValue(EFuncionConduccion.L3_HighwayChauffer);
 		
 		BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.FUNCION_CONDUCCION_ANTERIOR);
+
+		IKnowledgeProperty kp_manosEnVolante = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.MANOS_EN_VOLANTE);
+		kp_manosEnVolante.setValue(true);
+
+		IKnowledgeProperty kp_AsientoConductor = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.ASIENTO_CONDUCTOR_OCUPADO);
+		kp_AsientoConductor.setValue(true);
+
+		IKnowledgeProperty kp_vibracionVolante = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.VIBRACION_VOLANTE);
+		kp_vibracionVolante.setValue(true);
+
+		IKnowledgeProperty kp_vibracionAsientoConductor = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.VIBRACION_ASIENTO_CONDUCTOR);
+		kp_vibracionAsientoConductor.setValue(false);
+		
 		
 		// ADAPTATION RULES
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionHighwayToTrafficJamAdaptationRule(bundleContext));
@@ -88,14 +104,20 @@ public class Activator implements BundleActivator {
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionCityToTrafficJamAdaptationRule(bundleContext));
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionTrafficJamToHighwayAdaptationRule(bundleContext));
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionTrafficJamToCityAdaptationRule(bundleContext));
+ 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new SteeringWheelHapticVibrationAdaptationRule(bundleContext));
+ 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new DriverSeatHapticVibrationAdaptationRule(bundleContext));
  		
 		// MONITORS
 		IAdaptiveReadyComponent monitorTipoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorTipoVia(bundleContext));	
-		IAdaptiveReadyComponent monitorEstadoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorEstadoVia(bundleContext));		
+		IAdaptiveReadyComponent monitorEstadoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorEstadoVia(bundleContext));	
+		IAdaptiveReadyComponent monitorManosEnVolante = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorManosEnVolante(bundleContext));	
+		IAdaptiveReadyComponent monitorAsientoConductor = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorAsientoConductor(bundleContext));		
 
 		// PROBES
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaTipoVia(bundleContext), monitorTipoVia);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaEstadoVia(bundleContext), monitorEstadoVia);
+		BasicMAPEKLiteLoopHelper.deployProbe(new SondaManosEnVolante(bundleContext), monitorManosEnVolante);
+		BasicMAPEKLiteLoopHelper.deployProbe(new SondaAsientoConductor(bundleContext), monitorAsientoConductor);
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
@@ -141,12 +163,19 @@ public class Activator implements BundleActivator {
 		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "driving.L3.HighwayChauffer", "1.0.0");
 		
 		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.NotificationService", "1.0.0");
-		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.Speakers.AuditorySound", "1.0.0");
+		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.Speakers.AuditoryBeep", "1.0.0");
+		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
+		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.Seat.Driver", "1.0.0");
 		
 		// ADD BINDINGS
 		SystemConfigurationHelper.bindingToAdd(initialSystemConfiguration, 
 				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
-				"interaction.Speakers.AuditorySound", "1.0.0", AuditorySoundARC.PROVIDED_MECHANISM);
+				"interaction.Speakers.AuditoryBeep", "1.0.0", AuditorySoundARC.PROVIDED_MECHANISM);
+		
+		SystemConfigurationHelper.bindingToAdd(initialSystemConfiguration, 
+				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
+				"interaction.SteeringWheel", "1.0.0", HapticVibrationARC.PROVIDED_MECHANISM);
+		
 		
 		SystemConfigurationHelper.bindingToAdd(initialSystemConfiguration, 
 				"driving.L3.HighwayChauffer", "1.0.0", L3_HighwayChaufferARC.REQUIRED_ENGINE,

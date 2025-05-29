@@ -37,12 +37,16 @@ public class NotificationService extends Thing implements INotificationService {
 
 	@Override
 	public INotificationService addInteractionMechanism(String m) {
+		System.out.println("Interaction mechanisms: " + this.mechanisms);
+		System.out.println("Adding interaction mechanism: " + m);
 		this.mechanisms.add(m);
 		return this;
 	}
 
 	@Override
 	public INotificationService removeInteractionMechanism(String m) {
+		System.out.println("Interaction mechanisms: " + this.mechanisms);
+		System.out.println("Removing interaction mechanism: " + m);
 		this.mechanisms.remove(m);
 		return this;
 	}
