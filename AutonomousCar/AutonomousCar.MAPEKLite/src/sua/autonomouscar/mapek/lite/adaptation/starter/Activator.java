@@ -165,7 +165,6 @@ public class Activator implements BundleActivator {
 		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.NotificationService", "1.0.0");
 		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.Speakers.AuditoryBeep", "1.0.0");
 		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
-		SystemConfigurationHelper.componentToAdd(initialSystemConfiguration, "interaction.Seat.Driver", "1.0.0");
 		
 		// ADD BINDINGS
 		SystemConfigurationHelper.bindingToAdd(initialSystemConfiguration, 

@@ -1,4 +1,118 @@
-## Plan de pruebas nivel L3
+# AutonomousCar - SUA_6
+
+Grupo: Isaac Marsden, Miguel Licea Cespedes, Yuliia Solomakha, Mario Akio Scappini Udagawa, Ángela Alonso Pérez
+
+## Requisitos implementados
+
+Servicios:
+- ADS_L3-2
+- ADS_L3-3
+- ADS_L3-4
+- ADS_L3-5
+- ADS_L3-6
+
+ADS:
+- ADS-1
+
+Interacción:
+- INTERACT-2
+
+## Divergencias del diseño
+
+Varias decisiones tomadas durante la fase de diseño resultaron ser inadecuadas para la implementación, por lo que existen varias divergencias entre la implementación y el diseño:
+
+### Configuración inicial
+
+En el diseño, empezamos con una configuración de:
+
+- L0_ManualDriving
+- Engine
+- Steering
+- NotificationService
+  - Speakers_AuditorySound
+
+Esta configuración hemos reemplazado por una con el L3_HighwayChauffer activo para facilitar pruebas:
+
+- L3_HighwayChauffer
+  - Engine
+  - Steering
+  - RoadSensor
+  - FrontDistanceSensor
+  - LeftDistanceSensor
+  - RightDistanceSensor
+  - RearDistanceSensor
+  - HumanSensors
+  - NotificationService
+    - Speakers.AuditoryBeep
+    - SteeringWheel (interaction)
+  - ParkInTheRoadShoulderFallbackPlan
+
+### Propiedades del Knowledge
+
+Quitadas:
+ - nivel-autonomía
+ - sensores-funcionamiento
+ - plan-emergencia-actual
+ - lidar-activo
+
+Añadidas:
+  - funcion-conduccion-anterior
+  - manos-en-volante
+  - asiento-conductor-ocupado
+  - vibracion-volante
+  - vibracion-asiento-conductor
+  - errores-sensores-distancia-actual
+  - errores-sensores-distancia-anterior
+
+### Sondas
+
+Quitadas:
+  - sonda-sensor-fallo
+  - sonda-fallo-sistémico
+
+Añadidas:
+  - sonda-asiento-conductor
+  - sonda-manos-en-volante
+  - sonda-asiento-conductor
+  - sonda-error-sensor-distancia
+
+### Monitores
+
+Quitadas:
+  - monitor-sensor-fallo
+  - monitor-fallo-sistémico
+
+Añadidas:
+  - monitor-asiento-conductor
+  - monitor-manos-en-volante
+  - monitor-error-sensor-distancia
+
+### Reglas
+
+Quitadas:
+- regla-transición-nivel-3-2
+- regla-transición-nivel-3-1
+- regla-fallo-sensor-distancia-nivel3
+- regla-fallback-plan-park-shoulder-activo
+- regla-fallback-plan-emergency-activo
+- regla-prioritiza-sensor-distancia-nivel-3
+- regla-prioritiza-sensor-distancia-nivel-2
+- regla-prioritiza-sensor-distancia-nivel-1
+- regla-fallo-sistémico
+
+Añadidas:
+ - regla-driver-seat-haptic-vibration
+ - regla-steering-wheel-haptic-vibration
+ - regla-error-distance-sensor
+
+## Comandos
+
+Añadimos dos nuevos comandos al simulador para facilitar pruebas:
+
+1. `error [front | left | right | rear]` - Simula o arreglar un error en el sensor de distancia especificado.
+2. `notification` - Simula una notificación del sistema para probar la interacción con el usuario.
+
+## Pruebas para los requisitos implementados
 
 ---
 ```text
@@ -86,8 +200,8 @@ initialize
 road type city
 road status fluid
 show                 # CityChauffeur activo
-road type highway
 road status fluid    # (si no lo estaba)
+road type highway
 show
 
 Criterios de aceptación
@@ -100,8 +214,8 @@ initialize
 road type city
 road status fluid
 show                 # CityChauffeur activo
-road type highway
 road status jam      # (o collapsed)
+road type highway
 show
 
 Criterios de aceptación
