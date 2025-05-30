@@ -55,6 +55,8 @@ public class DriverSeatHapticVibrationAdaptationRule extends AdaptationRule {
 		
 		IRuleComponentsSystemConfiguration nextSystemConfiguration = SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
 
+		SystemConfigurationHelper.componentToAdd(nextSystemConfiguration, "interaction.Seat.Driver", "1.0.0");
+		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
 				"interaction.Seat.Driver", "1.0.0", HapticVibrationARC.PROVIDED_MECHANISM);
@@ -66,9 +68,7 @@ public class DriverSeatHapticVibrationAdaptationRule extends AdaptationRule {
 		
 		IRuleComponentsSystemConfiguration nextSystemConfiguration = SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
 
-		SystemConfigurationHelper.bindingToRemove(nextSystemConfiguration, 
-				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
-				"interaction.Seat.Driver", "1.0.0", HapticVibrationARC.PROVIDED_MECHANISM);
+		SystemConfigurationHelper.componentToRemove(nextSystemConfiguration, "interaction.Seat.Driver", "1.0.0");
 
 		return nextSystemConfiguration;
 	}

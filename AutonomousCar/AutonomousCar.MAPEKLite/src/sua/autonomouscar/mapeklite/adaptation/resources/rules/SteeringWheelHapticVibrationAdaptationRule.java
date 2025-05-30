@@ -54,6 +54,8 @@ public class SteeringWheelHapticVibrationAdaptationRule extends AdaptationRule {
 	private IRuleComponentsSystemConfiguration activarVibracionVolante() {
 		
 		IRuleComponentsSystemConfiguration nextSystemConfiguration = SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
+		
+		SystemConfigurationHelper.componentToAdd(nextSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
 
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
@@ -65,10 +67,8 @@ public class SteeringWheelHapticVibrationAdaptationRule extends AdaptationRule {
 	private IRuleComponentsSystemConfiguration desactivarVibracionVolante() {
 		
 		IRuleComponentsSystemConfiguration nextSystemConfiguration = SystemConfigurationHelper.createPartialSystemConfiguration(this.getId() + "_" + ITimeStamped.getCurrentTimeStamp());
-
-		SystemConfigurationHelper.bindingToRemove(nextSystemConfiguration, 
-				"interaction.NotificationService", "1.0.0", NotificationServiceARC.REQUIRED_SERVICE,
-				"interaction.SteeringWheel", "1.0.0", HapticVibrationARC.PROVIDED_MECHANISM);
+		
+		SystemConfigurationHelper.componentToRemove(nextSystemConfiguration, "interaction.SteeringWheel", "1.0.0");
 
 		return nextSystemConfiguration;
 	}
