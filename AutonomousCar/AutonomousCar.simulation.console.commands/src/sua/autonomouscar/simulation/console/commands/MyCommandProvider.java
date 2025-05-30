@@ -189,15 +189,71 @@ public class MyCommandProvider {
 	public void knowledge() {
 			
 			IKnowledgeProperty kp_tipoVia = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.TIPO_VIA);
+			IKnowledgeProperty kp_estadoVia = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_funcionConduccionActual = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_funcionConduccionAnterior = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_manosEnVolante = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_asientoConductor = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_vibracionVolante = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_vibracionAsientoConductor = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ESTADO_VIA);
+			IKnowledgeProperty kp_errorSensorDistanciaActual = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ERROR_SENSORES_DISTANCIA_ACTUAL);
+			IKnowledgeProperty kp_errorSensorDistanciaAnterior = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ERROR_SENSORES_DISTANCIA_ANTERIOR);
 			
 			String tipoVia = "UNKNOWN";
 			if ( kp_tipoVia != null && kp_tipoVia.getValue() != null )
 				tipoVia = kp_tipoVia.getValue().toString();
+			
+			String estadoVia = "UNKNOWN";
+			if ( kp_estadoVia != null && kp_estadoVia.getValue() != null )
+				estadoVia = kp_estadoVia.getValue().toString();
+			
+			String funcionConduccionActual = "UNKNOWN";
+			if ( kp_funcionConduccionActual != null && kp_funcionConduccionActual.getValue() != null )
+				funcionConduccionActual = kp_funcionConduccionActual.getValue().toString();
+			
+			String funcionConduccionAnterior = "UNKNOWN";
+			if ( kp_funcionConduccionAnterior != null && kp_funcionConduccionAnterior.getValue() != null )
+				funcionConduccionAnterior = kp_funcionConduccionAnterior.getValue().toString();
+			
+			String manosEnVolante = "UNKNOWN";
+			if ( kp_manosEnVolante != null && kp_manosEnVolante.getValue() != null )
+				manosEnVolante = kp_manosEnVolante.getValue().toString();
+			
+			String asientoConductor = "UNKNOWN";
+			if ( kp_asientoConductor != null && kp_asientoConductor.getValue() != null )
+				asientoConductor = kp_asientoConductor.getValue().toString();
+			
+			String vibracionVolante = "UNKNOWN";
+			if ( kp_vibracionVolante != null && kp_vibracionVolante.getValue() != null )
+				vibracionVolante = kp_vibracionVolante.getValue().toString();
+			
+			String vibracionAsientoConductor = "UNKNOWN";
+			if ( kp_vibracionAsientoConductor != null && kp_vibracionAsientoConductor.getValue() != null )
+				vibracionAsientoConductor = kp_vibracionAsientoConductor.getValue().toString();
+			
+			String errorSensorDistanciaActual = "NONE";
+			if ( kp_errorSensorDistanciaActual != null && kp_errorSensorDistanciaActual.getValue() != null )
+				errorSensorDistanciaActual = kp_errorSensorDistanciaActual.getValue().toString();
+			
+			String errorSensorDistanciaAnterior = "NONE";
+			if ( kp_errorSensorDistanciaAnterior != null && kp_errorSensorDistanciaAnterior.getValue() != null )
+				errorSensorDistanciaAnterior = kp_errorSensorDistanciaAnterior.getValue().toString();
+			
+			
 					
 			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
 			System.out.println("*  KNOWLEDGE");
 			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
 			System.out.println(String.format("*   tipo-via: %s", tipoVia));
+			System.out.println(String.format("*   estado-via: %s", estadoVia));
+			System.out.println(String.format("* funcion-conduccion-actual: %s", funcionConduccionActual));
+			System.out.println(String.format("* funcion-conduccion-anterior: %s", funcionConduccionAnterior));
+			System.out.println(String.format("* manos-en-volante: %s", manosEnVolante));
+			System.out.println(String.format("* asiento-conductor-ocupado: %s", asientoConductor));
+			System.out.println(String.format("* vibracion-volante: %s", vibracionVolante));
+			System.out.println(String.format("* vibracion-asiento-conductor: %s", vibracionAsientoConductor));
+			System.out.println(String.format("* error-sensor-distancia-actual: %s", errorSensorDistanciaActual));
+			System.out.println(String.format("* error-sensor-distancia-anterior: %s", errorSensorDistanciaAnterior));
 			// ...
 			System.out.println("* * * * * * * * * * * * * * * * * * * * * * * *");
 

@@ -147,10 +147,20 @@ public class Activator implements BundleActivator {
 					//
 					"steering", 			// controlar manualmente las funciones primarias de conducción
 					
-					// notification : envía una notificación al conductor
+					// notification : envía una notificación al conductor mediante los mecanismos activos
+					//
+					//  Modo uso
+					//		notification
+					//
 					"notification",
 					
-					// error: causa un error en un sensor de distancia
+					// error: causa o quitar un error en un sensor de distancia
+					//
+					//  Modo uso
+					//		error [ front | rear | left | right ]
+					//
+					//  Ejemplo: error en sensor de distancia frontal
+					//		error front
 					"error",
 					
 				//	
