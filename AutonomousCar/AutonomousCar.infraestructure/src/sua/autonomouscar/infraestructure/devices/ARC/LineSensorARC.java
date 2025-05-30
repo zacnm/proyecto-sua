@@ -28,7 +28,6 @@ public class LineSensorARC extends AdaptiveReadyComponent implements IAdaptiveRe
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((LineSensor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

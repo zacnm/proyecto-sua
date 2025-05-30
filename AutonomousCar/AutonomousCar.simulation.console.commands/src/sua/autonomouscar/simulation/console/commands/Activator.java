@@ -150,6 +150,9 @@ public class Activator implements BundleActivator {
 					// notification : envía una notificación al conductor
 					"notification",
 					
+					// error: causa un error en un sensor de distancia
+					"error",
+					
 				//	
 				// FUNCIONES DE CONDUCCIÓN
 				//	

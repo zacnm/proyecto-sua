@@ -28,7 +28,6 @@ public class RoadSensorARC extends AdaptiveReadyComponent implements IAdaptiveRe
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((RoadSensor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

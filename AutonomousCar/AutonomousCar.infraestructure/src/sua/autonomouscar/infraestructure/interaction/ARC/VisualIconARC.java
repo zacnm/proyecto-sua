@@ -28,7 +28,6 @@ public class VisualIconARC extends AdaptiveReadyComponent implements IAdaptiveRe
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((VisualIcon)this.mechanism).unregisterThing();
-		this.mechanism = null;
 		return super.undeploy();
 	}
 	

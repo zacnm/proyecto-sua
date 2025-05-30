@@ -28,7 +28,6 @@ public class EngineARC extends AdaptiveReadyComponent implements IAdaptiveReadyC
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((Engine)this.device).unregisterThing();
-		this.device = null;
 		return super.undeploy();
 	}
 	

@@ -17,7 +17,6 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		this.drivingFunctionARC = new L3_HighwayChaufferARC(bundleContext, "L3_HighwayChauffer");
 		this.drivingFunctionARC.start();
-		System.out.println("L3_HighwayChauffer started");
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {

@@ -30,7 +30,6 @@ public class DriverFaceMonitorARC extends AdaptiveReadyComponent implements IAda
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((DriverFaceMonitor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

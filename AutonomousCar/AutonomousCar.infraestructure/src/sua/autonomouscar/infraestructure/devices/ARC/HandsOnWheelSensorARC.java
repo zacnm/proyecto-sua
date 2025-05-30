@@ -29,7 +29,6 @@ public class HandsOnWheelSensorARC extends AdaptiveReadyComponent implements IAd
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((HandsOnWheelSensor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

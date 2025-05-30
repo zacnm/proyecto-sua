@@ -1,5 +1,7 @@
 package sua.autonomouscar.mapek.lite.adaptation.starter;
 
+import java.util.HashMap;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -25,17 +27,21 @@ import sua.autonomouscar.infraestructure.interaction.ARC.HapticVibrationARC;
 import sua.autonomouscar.infraestructure.interaction.ARC.NotificationServiceARC;
 import sua.autonomouscar.interfaces.ERoadStatus;
 import sua.autonomouscar.interfaces.ERoadType;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.EDireccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorAsientoConductor;
+import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorErrorSensorDistancia;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorEstadoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorManosEnVolante;
 import sua.autonomouscar.mapeklite.adaptation.resources.monitors.MonitorTipoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaAsientoConductor;
+import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaErrorSensorDistancia;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaEstadoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaManosEnVolante;
 import sua.autonomouscar.mapeklite.adaptation.resources.probes.SondaTipoVia;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.DriverSeatHapticVibrationAdaptationRule;
+import sua.autonomouscar.mapeklite.adaptation.resources.rules.ErrorDistanceSensorAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.SteeringWheelHapticVibrationAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TransitionCityToHighwayAdaptationRule;
 import sua.autonomouscar.mapeklite.adaptation.resources.rules.TransitionCityToTrafficJamAdaptationRule;
@@ -96,6 +102,16 @@ public class Activator implements BundleActivator {
 		IKnowledgeProperty kp_vibracionAsientoConductor = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.VIBRACION_ASIENTO_CONDUCTOR);
 		kp_vibracionAsientoConductor.setValue(false);
 		
+		IKnowledgeProperty kp_errorSensoresDistancia = BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.ERROR_SENSORES_DISTANCIA_ACTUAL);
+		kp_errorSensoresDistancia.setValue(new HashMap<EDireccion, Boolean>() {{
+			put(EDireccion.FRONT, false);
+			put(EDireccion.RIGHT, false);
+			put(EDireccion.LEFT, false);
+			put(EDireccion.REAR, false);
+		}});
+		
+		BasicMAPEKLiteLoopHelper.createKnowledgeProperty(KnowledgeId.ERROR_SENSORES_DISTANCIA_ANTERIOR);
+		
 		
 		// ADAPTATION RULES
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionHighwayToTrafficJamAdaptationRule(bundleContext));
@@ -106,18 +122,21 @@ public class Activator implements BundleActivator {
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new TransitionTrafficJamToCityAdaptationRule(bundleContext));
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new SteeringWheelHapticVibrationAdaptationRule(bundleContext));
  		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new DriverSeatHapticVibrationAdaptationRule(bundleContext));
+ 		BasicMAPEKLiteLoopHelper.deployAdaptationRule(new ErrorDistanceSensorAdaptationRule(bundleContext));
  		
 		// MONITORS
-		IAdaptiveReadyComponent monitorTipoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorTipoVia(bundleContext));	
-		IAdaptiveReadyComponent monitorEstadoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorEstadoVia(bundleContext));	
-		IAdaptiveReadyComponent monitorManosEnVolante = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorManosEnVolante(bundleContext));	
-		IAdaptiveReadyComponent monitorAsientoConductor = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorAsientoConductor(bundleContext));		
+		IAdaptiveReadyComponent monitorTipoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorTipoVia(bundleContext));
+		IAdaptiveReadyComponent monitorEstadoVia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorEstadoVia(bundleContext));
+		IAdaptiveReadyComponent monitorManosEnVolante = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorManosEnVolante(bundleContext));
+		IAdaptiveReadyComponent monitorAsientoConductor = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorAsientoConductor(bundleContext));
+		IAdaptiveReadyComponent monitorErrorSensorDistancia = BasicMAPEKLiteLoopHelper.deployMonitor(new MonitorErrorSensorDistancia(bundleContext));
 
 		// PROBES
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaTipoVia(bundleContext), monitorTipoVia);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaEstadoVia(bundleContext), monitorEstadoVia);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaManosEnVolante(bundleContext), monitorManosEnVolante);
 		BasicMAPEKLiteLoopHelper.deployProbe(new SondaAsientoConductor(bundleContext), monitorAsientoConductor);
+		BasicMAPEKLiteLoopHelper.deployProbe(new SondaErrorSensorDistancia(bundleContext), monitorErrorSensorDistancia);
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {

@@ -28,7 +28,6 @@ public class SpeedometerARC extends AdaptiveReadyComponent implements IAdaptiveR
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((Speedometer)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

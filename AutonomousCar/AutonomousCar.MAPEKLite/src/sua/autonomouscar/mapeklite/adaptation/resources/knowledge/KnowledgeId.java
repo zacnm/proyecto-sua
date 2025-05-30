@@ -10,5 +10,6 @@ public final class KnowledgeId {
 	public static final String ASIENTO_CONDUCTOR_OCUPADO = "asiento-conductor-ocupado";
 	public static final String VIBRACION_VOLANTE = "vibracion-volante";
 	public static final String VIBRACION_ASIENTO_CONDUCTOR = "vibracion-asiento-conductor";
-	
+	public static final String ERROR_SENSORES_DISTANCIA_ACTUAL = "errores-sensores-distancia-actual";
+	public static final String ERROR_SENSORES_DISTANCIA_ANTERIOR = "errores-sensores-distancia-anterior";
 }

@@ -28,7 +28,6 @@ public class SteeringARC extends AdaptiveReadyComponent implements IAdaptiveRead
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((Steering)this.device).unregisterThing();
-		this.device = null;
 		return super.undeploy();
 	}
 	

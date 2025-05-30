@@ -30,7 +30,6 @@ public class NotificationServiceARC extends AdaptiveReadyComponent implements IA
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((NotificationService)this.service).unregisterThing();
-		this.service = null;
 		return super.undeploy();
 	}
 	

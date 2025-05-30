@@ -30,7 +30,6 @@ public class SeatSensorARC extends AdaptiveReadyComponent implements IAdaptiveRe
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((SeatSensor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

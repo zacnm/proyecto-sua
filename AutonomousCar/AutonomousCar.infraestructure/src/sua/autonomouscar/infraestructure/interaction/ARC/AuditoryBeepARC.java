@@ -28,7 +28,6 @@ public class AuditoryBeepARC extends AdaptiveReadyComponent implements IAdaptive
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((AuditoryBeep)this.mechanism).unregisterThing();
-		this.mechanism = null;
 		return super.undeploy();
 	}
 	

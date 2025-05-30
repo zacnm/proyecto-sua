@@ -1,5 +1,7 @@
 package sua.autonomouscar.mapeklite.adaptation.resources.rules;
 
+import java.util.HashMap;
+
 import org.osgi.framework.BundleContext;
 
 import es.upv.pros.tatami.adaptation.mapek.lite.ARC.structures.systemconfiguration.interfaces.IRuleComponentsSystemConfiguration;
@@ -11,7 +13,7 @@ import es.upv.pros.tatami.adaptation.mapek.lite.helpers.SystemConfigurationHelpe
 import es.upv.pros.tatami.adaptation.mapek.lite.structures.systemconfiguration.interfaces.IRuleSystemConfiguration;
 import es.upv.pros.tatami.osgi.utils.interfaces.ITimeStamped;
 import es.upv.pros.tatami.osgi.utils.logger.SmartLogger;
-
+import sua.autonomouscar.driving.l3.citychauffer.L3_CityChaufferARC;
 import sua.autonomouscar.driving.l3.trafficjamchauffer.L3_TrafficJamChaufferARC;
 import sua.autonomouscar.driving.parkintheroadshoulderfallbackplan.ParkInTheRoadShoulderFallbackPlanARC;
 import sua.autonomouscar.infraestructure.devices.ARC.DistanceSensorARC;
@@ -22,6 +24,7 @@ import sua.autonomouscar.infraestructure.devices.ARC.RoadSensorARC;
 import sua.autonomouscar.infraestructure.devices.ARC.SteeringARC;
 import sua.autonomouscar.infraestructure.driving.ARC.L3_DrivingServiceARC;
 import sua.autonomouscar.infraestructure.interaction.ARC.NotificationServiceARC;
+import sua.autonomouscar.mapeklite.adaptation.resources.enums.EDireccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.enums.EFuncionConduccion;
 import sua.autonomouscar.mapeklite.adaptation.resources.knowledge.KnowledgeId;
 
@@ -32,6 +35,7 @@ public class TransitionHighwayToTrafficJamAdaptationRule extends AdaptationRule 
 	
 	IKnowledgeProperty kp_FuncionConduccionActual = null;
 	IKnowledgeProperty kp_FuncionConduccionAnterior = null;
+	IKnowledgeProperty kp_ErrorSensorDistancia = null;
 
 	public TransitionHighwayToTrafficJamAdaptationRule(BundleContext context) {
 		super(context, ID);
@@ -39,6 +43,7 @@ public class TransitionHighwayToTrafficJamAdaptationRule extends AdaptationRule 
 
 		kp_FuncionConduccionActual = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.FUNCION_CONDUCCION_ACTUAL);
 		kp_FuncionConduccionAnterior = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.FUNCION_CONDUCCION_ANTERIOR);
+		kp_ErrorSensorDistancia = BasicMAPEKLiteLoopHelper.getKnowledgeProperty(KnowledgeId.ERROR_SENSORES_DISTANCIA_ACTUAL);
 	}
 
 	@Override
@@ -47,7 +52,9 @@ public class TransitionHighwayToTrafficJamAdaptationRule extends AdaptationRule 
 		if (kp_FuncionConduccionActual == null || 
 				kp_FuncionConduccionAnterior == null ||
 				kp_FuncionConduccionActual.getValue() == null ||
-				kp_FuncionConduccionAnterior.getValue() == null) {
+				kp_FuncionConduccionAnterior.getValue() == null || 
+				kp_ErrorSensorDistancia == null ||
+				kp_ErrorSensorDistancia.getValue() == null) {
 			return false;
 		}
 		
@@ -81,19 +88,19 @@ public class TransitionHighwayToTrafficJamAdaptationRule extends AdaptationRule 
 		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"driving.L3.TrafficJamChauffer", "1.0.0", L3_TrafficJamChaufferARC.REQUIRED_FRONTDISTANCESENSOR,
-				"device.FrontDistanceSensor", "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
+				getDistanceSensorId(EDireccion.FRONT), "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
 		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"driving.L3.TrafficJamChauffer", "1.0.0", L3_TrafficJamChaufferARC.REQUIRED_LEFTDISTANCESENSOR,
-				"device.LeftDistanceSensor", "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
+				getDistanceSensorId(EDireccion.LEFT), "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
 		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"driving.L3.TrafficJamChauffer", "1.0.0", L3_TrafficJamChaufferARC.REQUIRED_REARDISTANCESENSOR,
-				"device.RearDistanceSensor", "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
+				getDistanceSensorId(EDireccion.REAR), "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
 		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"driving.L3.TrafficJamChauffer", "1.0.0", L3_TrafficJamChaufferARC.REQUIRED_RIGHTDISTANCESENSOR,
-				"device.RightDistanceSensor", "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
+				getDistanceSensorId(EDireccion.RIGHT), "1.0.0", DistanceSensorARC.PROVIDED_SENSOR);
 		
 		SystemConfigurationHelper.bindingToAdd(nextSystemConfiguration, 
 				"driving.L3.TrafficJamChauffer", "1.0.0", L3_TrafficJamChaufferARC.REQUIRED_LEFTLINESENSOR,
@@ -122,6 +129,32 @@ public class TransitionHighwayToTrafficJamAdaptationRule extends AdaptationRule 
 		
 		return nextSystemConfiguration;
 		
+	}
+	
+	private String getDistanceSensorId(EDireccion direccion) {
+		
+		boolean errorSensorDistancia = ((HashMap<EDireccion, Boolean>) kp_ErrorSensorDistancia.getValue()).get(direccion);
+		
+		String sensorName = null;
+		
+		switch (direccion) {
+			case FRONT:
+				sensorName =  "FrontDistanceSensor";
+				break;
+			case REAR:
+				sensorName =  "RearDistanceSensor";
+				break;
+			case LEFT:
+				sensorName =  "LeftDistanceSensor";
+				break;
+			case RIGHT:
+				sensorName =  "RightDistanceSensor";
+				break;
+			default:
+				throw new IllegalArgumentException("Dirección no válida: " + direccion);
+		}
+		
+		return "device." + (errorSensorDistancia ? "LIDAR." : "") + sensorName;
 	}
 
 	

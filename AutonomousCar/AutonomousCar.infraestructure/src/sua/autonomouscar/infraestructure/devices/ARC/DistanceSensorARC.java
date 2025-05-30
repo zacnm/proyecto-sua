@@ -29,7 +29,6 @@ public class DistanceSensorARC extends AdaptiveReadyComponent implements IAdapti
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((DistanceSensor)this.sensor).unregisterThing();
-		this.sensor = null;
 		return super.undeploy();
 	}
 	

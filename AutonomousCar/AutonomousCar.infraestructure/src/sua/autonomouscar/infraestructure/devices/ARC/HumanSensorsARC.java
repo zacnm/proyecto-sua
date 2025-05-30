@@ -36,7 +36,6 @@ public class HumanSensorsARC extends AdaptiveReadyComponent implements IAdaptive
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((HumanSensors)this.sensors).unregisterThing();
-		this.sensors = null;
 		return super.undeploy();
 	}
 	

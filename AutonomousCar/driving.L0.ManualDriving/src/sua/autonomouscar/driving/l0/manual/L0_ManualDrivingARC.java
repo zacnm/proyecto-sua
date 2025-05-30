@@ -9,7 +9,6 @@ public class L0_ManualDrivingARC extends L0_DrivingServiceARC {
 	
 	public L0_ManualDrivingARC(BundleContext context, String id) {
 		super(context, context.getBundle().getSymbolicName());
-		System.out.println("L0_ManualDriving started");
 		this.setTheDrivingService(new L0_ManualDriving(this.context, id));
 	}
 

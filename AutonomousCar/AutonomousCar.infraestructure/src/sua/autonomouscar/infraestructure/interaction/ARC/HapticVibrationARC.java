@@ -21,7 +21,6 @@ public class HapticVibrationARC extends AdaptiveReadyComponent implements IAdapt
 	
 	@Override
 	public IAdaptiveReadyComponent deploy() {
-		System.out.println("Deploying HapticVibrationARC with id: " + this.mechanism.getId());
 		((HapticVibration)this.mechanism).registerThing();
 		return super.deploy();
 	}
@@ -29,7 +28,6 @@ public class HapticVibrationARC extends AdaptiveReadyComponent implements IAdapt
 	@Override
 	public IAdaptiveReadyComponent undeploy() {
 		((HapticVibration)this.mechanism).unregisterThing();
-		this.mechanism = null;
 		return super.undeploy();
 	}
 	
